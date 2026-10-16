@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Enterprise Knowledge Assistant | Sanjay Kandimalla</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="theme.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="index.html">Sanjay Kandimalla</a>
+      <nav aria-label="Main">
+        <ul class="nav-list">
+          <li><a href="index.html#projects">Projects</a></li>
+          <li><a href="how-its-built.html">How it's built</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle" type="button" id="theme-toggle" aria-pressed="false">
+        <span class="theme-toggle-label">Dark theme</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <article class="wrap narrow article">
+      <a class="back-link" href="index.html#projects">Back to projects</a>
+      <p class="eyebrow">Project. American Airlines. Employer work, described in general terms.</p>
+      <h1>Enterprise Knowledge Assistant</h1>
+
+      <h2>The problem</h2>
+      <p>Employees needed one place to ask questions about internal documentation, policies and system data.</p>
+
+      <h2>How it fits together</h2>
+      <dl class="facts">
+        <div>
+          <dt>Retrieval</dt>
+          <dd>A retrieval pipeline over internal documents using pgvector.</dd>
+        </div>
+        <div>
+          <dt>Agent layer</dt>
+          <dd>An agent that could take follow-up actions, such as opening tickets and pulling live data, through tool calling.</dd>
+        </div>
+        <div>
+          <dt>MCP server</dt>
+          <dd>A custom MCP server that exposed internal APIs and databases as standard, secure context sources, so other internal AI tools could reuse them.</dd>
+        </div>
+        <div>
+          <dt>Frontend</dt>
+          <dd>A React frontend for employees and admin monitoring.</dd>
+        </div>
+      </dl>
+      <p class="placeholder-note">Placeholder: a simple diagram of these four parts goes here. Component types only, no internal systems.</p>
+
+      <h2>What I owned</h2>
+      <p>Architecture and implementation, a FastAPI backend and a React frontend for employees and admin monitoring.</p>
+
+      <h2>Answer quality</h2>
+      <p>I used prompt engineering and evaluation methods to reduce irrelevant or incorrect answers.</p>
+
+      <h2>Stack</h2>
+      <ul class="tags" aria-label="Stack">
+        <li>Python</li><li>FastAPI</li><li>React</li><li>PostgreSQL + pgvector</li><li>MCP</li>
+      </ul>
+
+      <h2>What this page leaves out</h2>
+      <p>This was employer work, so internal names, data, screenshots and numbers stay private.</p>
+      <p class="placeholder-note">Placeholder: anything more you can say in general terms. Without it, the page stays this short.</p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap"><p>Sanjay Kandimalla. Static prototype for review.</p></div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Never upload these from a local `vercel` CLI deploy (ADR 005).
+/content/example/
+/app/example/
+/prototype/
+.env*

@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sanjay Kandimalla</title>
+  <meta name="description" content="Backend engineer building retrieval systems, AI agents and secure integrations.">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Loaded in head so the saved theme applies before the page paints. -->
+  <script src="theme.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="index.html">Sanjay Kandimalla</a>
+      <nav aria-label="Main">
+        <ul class="nav-list">
+          <li><a href="#focus">Focus</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#notes">Notes</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="how-its-built.html">How it's built</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle" type="button" id="theme-toggle" aria-pressed="false">
+        <span class="theme-toggle-label">Dark theme</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- 1. Intro and chat -->
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div>
+        <p class="eyebrow">Backend engineer, Dallas area</p>
+        <h1 id="hero-title">I build AI agents and retrieval systems for enterprise teams.</h1>
+        <p class="lede">Backend engineer working with Python, RAG, MCP and the systems around them: APIs, databases and access control.</p>
+
+        <ul class="proof" aria-label="Highlights">
+          <li>Building production backend systems since 2021.</li>
+          <li>RAG pipelines, AI agents and MCP servers in production.</li>
+          <li>M.S. in Applied Statistics and Data Science, UT Arlington (CGPA 3.9).</li>
+        </ul>
+        <p class="placeholder-note">Placeholder: proof point wording waiting for your approval. Hidden on the real site until approved.</p>
+
+        <ul class="link-row">
+          <li><a class="button" href="#" aria-disabled="true">Resume (PDF)</a></li>
+          <li><a class="button button-quiet" href="https://github.com/codewithsanjay-pixel">GitHub</a></li>
+          <li><a class="button button-quiet" href="https://www.linkedin.com/in/sanjay-kandimalla/">LinkedIn</a></li>
+        </ul>
+        <p class="placeholder-note">Placeholder: the resume PDF link is added once the file exists. It must match RESUME.md.</p>
+      </div>
+
+      <aside class="chat" aria-labelledby="chat-title">
+        <div class="chat-head">
+          <h2 id="chat-title">Ask about my work</h2>
+          <span class="badge">Preview, not connected</span>
+        </div>
+        <p class="chat-hint">Answers come only from my resume and project text, with sources shown.</p>
+        <div class="chat-log" aria-live="polite" id="chat-log">
+          <div class="msg msg-bot">
+            <p class="msg-label">Example refusal</p>
+            <p>I can only answer questions about my work and this site. Try asking about my projects, skills or background.</p>
+          </div>
+        </div>
+        <p class="chips-label" id="chips-label">Try one:</p>
+        <ul class="chips" aria-labelledby="chips-label">
+          <li><button type="button" class="chip starter">What have you built with RAG?</button></li>
+          <li><button type="button" class="chip starter">How have you secured AI integrations?</button></li>
+          <li><button type="button" class="chip starter">Where have you used MCP?</button></li>
+          <li><button type="button" class="chip starter">What is your background?</button></li>
+        </ul>
+        <form class="chat-form" id="chat-form" style="display:flex;gap:0.5rem">
+          <label class="visually-hidden" for="chat-input">Your question</label>
+          <input id="chat-input" type="text" maxlength="500" placeholder="Ask a question about my work" autocomplete="off"
+                 style="flex:1;min-width:0;font:inherit;font-size:1rem;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:0.55rem 0.75rem">
+          <button class="button" type="submit">Ask</button>
+        </form>
+      </aside>
+    </section>
+
+    <!-- 2. Focus -->
+    <section id="focus" class="section band" aria-labelledby="focus-title">
+      <div class="wrap">
+        <h2 id="focus-title" class="section-title">Focus</h2>
+        <div class="grid-3">
+          <article class="card">
+            <p class="card-num">01</p>
+            <h3>Retrieval (RAG)</h3>
+            <p class="card-body">I build retrieval pipelines over internal documents with pgvector and FAISS, and I choose embedding models and chunking strategies to improve search quality. The goal is more relevant retrieval and fewer made-up answers.</p>
+          </article>
+          <article class="card">
+            <p class="card-num">02</p>
+            <h3>Agents and tool use</h3>
+            <p class="card-body">I build agents that plan multi-step work and call tools across enterprise systems. I also build the React dashboards people use to monitor and check what the agent did.</p>
+          </article>
+          <article class="card">
+            <p class="card-num">03</p>
+            <h3>Secure integrations</h3>
+            <p class="card-body">I connect language models to internal data through MCP servers and REST APIs. I add authentication, rate limiting and access controls to the servers and endpoints that handle sensitive data.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Experience -->
+    <section id="experience" class="section" aria-labelledby="experience-title">
+      <div class="wrap">
+        <h2 id="experience-title" class="section-title">Experience</h2>
+        <ol class="timeline">
+          <li class="timeline-item" id="aa">
+            <p class="timeline-dates">February 2025 to present</p>
+            <h3 class="timeline-title">Software Development Engineer</h3>
+            <p class="timeline-org">American Airlines. Dallas, TX (remote).</p>
+            <p>Backend-focused full stack work on AI tools for operations, customer support and internal automation.</p>
+            <details>
+              <summary>Details</summary>
+              <div class="detail-group">
+                <h4>AI systems</h4>
+                <ul>
+                  <li>Built Python services with FastAPI and integrated language models (OpenAI, Azure OpenAI) into internal tools to automate business workflows.</li>
+                  <li>Built RAG pipelines over internal knowledge bases with pgvector and FAISS, and evaluated embedding models and chunking strategies to improve search.</li>
+                  <li>Built agents for multi-step workflows: task planning, tool calling and orchestration.</li>
+                  <li>Used ML techniques (feature engineering, model evaluation) in systems that combine traditional ML models with LLM-based reasoning.</li>
+                  <li>Used few-shot prompting, chain-of-thought structuring and system prompt design to make answers more accurate and consistent.</li>
+                </ul>
+              </div>
+              <div class="detail-group">
+                <h4>Integrations and security</h4>
+                <ul>
+                  <li>Built MCP servers to standardize secure access to internal data sources, so several AI tools could reuse the same context.</li>
+                  <li>Added authentication, rate limiting and access controls to MCP servers and REST API endpoints that handle sensitive data.</li>
+                  <li>Connected AI services to core enterprise systems through REST APIs.</li>
+                </ul>
+              </div>
+              <div class="detail-group">
+                <h4>Data and operations</h4>
+                <ul>
+                  <li>Used PostgreSQL and MongoDB for application context, conversation state and retrieval, and tuned query performance.</li>
+                  <li>Monitored AI applications in production to find latency and accuracy problems in responses and agent workflows.</li>
+                  <li>Built React interfaces and dashboards so business users could monitor and check agent output.</li>
+                </ul>
+              </div>
+              <div class="detail-group">
+                <h4>Team and standards</h4>
+                <ul>
+                  <li>Set internal standards for MCP integration patterns and prompt versioning.</li>
+                  <li>Wrote guides for engineers new to RAG and agent development.</li>
+                  <li>Presented designs and trade-offs to engineering leadership and product.</li>
+                  <li>Worked with data science, platform and product teams in Agile/Scrum, with Git and CI/CD.</li>
+                </ul>
+              </div>
+            </details>
+          </li>
+
+          <li class="timeline-item" id="ms">
+            <p class="timeline-dates">January 2024 to December 2025</p>
+            <h3 class="timeline-title">M.S., Applied Statistics and Data Science</h3>
+            <p class="timeline-org">University of Texas at Arlington.</p>
+            <p>Full-time study from January 2024. Joined American Airlines in February 2025 while finishing the degree. CGPA 3.9.</p>
+          </li>
+
+          <li class="timeline-item" id="amex">
+            <p class="timeline-dates">June 2021 to December 2023</p>
+            <h3 class="timeline-title">Software Engineer</h3>
+            <p class="timeline-org">American Express. Hyderabad, India.</p>
+            <p>Backend services and APIs for fraud detection, risk scoring and customer analytics.</p>
+            <details>
+              <summary>Details</summary>
+              <div class="detail-group">
+                <h4>Services and data</h4>
+                <ul>
+                  <li>Built backend services and REST APIs with Flask and FastAPI.</li>
+                  <li>Modeled and maintained SQL (PostgreSQL, MySQL) and MongoDB data structures.</li>
+                  <li>Built full stack features with React and Python APIs for internal risk and compliance tools.</li>
+                </ul>
+              </div>
+              <div class="detail-group">
+                <h4>Machine learning in production</h4>
+                <ul>
+                  <li>Built data pipelines that brought scikit-learn models into backend services for real-time fraud scoring and risk classification.</li>
+                  <li>Worked with data science teams to move models from prototype into production.</li>
+                  <li>Supported early NLP tooling that classified customer support tickets.</li>
+                </ul>
+              </div>
+              <div class="detail-group">
+                <h4>Engineering practice</h4>
+                <ul>
+                  <li>Refactored legacy Python services into modular, testable components.</li>
+                  <li>Automated recurring data validation and reporting with Python scripts.</li>
+                  <li>Debugged production incidents with on-call and platform teams.</li>
+                  <li>Documented API contracts with OpenAPI/Swagger and reviewed pull requests.</li>
+                  <li>Followed code review, unit and integration testing, and CI/CD with Git and Jenkins.</li>
+                </ul>
+              </div>
+            </details>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 4. Skills -->
+    <section id="skills" class="section band" aria-labelledby="skills-title">
+      <div class="wrap">
+        <h2 id="skills-title" class="section-title">Skills</h2>
+        <div class="skills-filters" role="group" aria-label="Filter skills by group">
+          <ul class="chips" id="skill-filters">
+            <li><button type="button" class="chip" aria-pressed="true" data-group="All">All</button></li>
+          </ul>
+        </div>
+        <div id="skill-groups">
+          <div class="skill-group" data-group="Backend">
+            <h3>Backend</h3>
+            <ul class="skill-list">
+              <li class="skill">Python <span class="skill-tag" title="American Airlines role">AA</span><span class="skill-tag" title="American Express role">Amex</span><span class="skill-tag" title="Enterprise Knowledge Assistant">EKA</span></li>
+              <li class="skill">FastAPI <span class="skill-tag">AA</span><span class="skill-tag">Amex</span><span class="skill-tag">EKA</span></li>
+              <li class="skill">Flask <span class="skill-tag">Amex</span></li>
+              <li class="skill">Django REST Framework</li>
+              <li class="skill">REST API design and integration <span class="skill-tag">AA</span><span class="skill-tag">Amex</span></li>
+              <li class="skill">Microservices</li>
+              <li class="skill">asyncio</li>
+            </ul>
+          </div>
+          <div class="skill-group" data-group="AI and LLM engineering">
+            <h3>AI and LLM engineering</h3>
+            <ul class="skill-list">
+              <li class="skill">LLM integration <span class="skill-tag">AA</span></li>
+              <li class="skill">RAG <span class="skill-tag">AA</span><span class="skill-tag">EKA</span></li>
+              <li class="skill">AI agents <span class="skill-tag">AA</span><span class="skill-tag">EKA</span></li>
+              <li class="skill">Agent orchestration <span class="skill-tag">AA</span></li>
+              <li class="skill">MCP <span class="skill-tag">AA</span><span class="skill-tag">EKA</span></li>
+              <li class="skill">Prompt engineering <span class="skill-tag">AA</span><span class="skill-tag">EKA</span></li>
+              <li class="skill">LangChain</li>
+              <li class="skill">LlamaIndex</li>
+            </ul>
+          </div>
+          <div class="skill-group" data-group="Machine learning">
+            <h3>Machine learning</h3>
+            <ul class="skill-list">
+              <li class="skill">scikit-learn <span class="skill-tag">Amex</span></li>
+              <li class="skill">PyTorch (working knowledge)</li>
+              <li class="skill">Pandas</li>
+              <li class="skill">NumPy</li>
+              <li class="skill">Model evaluation <span class="skill-tag">AA</span></li>
+              <li class="skill">Feature engineering <span class="skill-tag">AA</span></li>
+              <li class="skill">Statistical modeling</li>
+            </ul>
+          </div>
+          <div class="skill-group" data-group="LLM platforms and APIs">
+            <h3>LLM platforms and APIs</h3>
+            <ul class="skill-list">
+              <li class="skill">OpenAI API <span class="skill-tag">AA</span></li>
+              <li class="skill">Azure OpenAI Service <span class="skill-tag">AA</span></li>
+              <li class="skill">Anthropic Claude API</li>
+              <li class="skill">AWS Bedrock</li>
+            </ul>
+          </div>
+          <div class="skill-group" data-group="Vectors and search">
+            <h3>Vectors and search</h3>
+            <ul class="skill-list">
+              <li class="skill">pgvector <span class="skill-tag">AA</span><span class="skill-tag">EKA</span></li>
+              <li class="skill">FAISS <span class="skill-tag">AA</span></li>
+              <li class="skill">Pinecone</li>
+              <li class="skill">Chroma</li>
+              <li class="skill">Embedding models <span class="skill-tag">AA</span></li>
+              <li class="skill">Semantic search <span class="skill-tag">AA</span><span class="skill-tag">EKA</span></li>
+            </ul>
+          </div>
+          <div class="skill-group" data-group="Frontend">
+            <h3>Frontend</h3>
+            <ul class="skill-list">
+              <li class="skill">React <span class="skill-tag">AA</span><span class="skill-tag">Amex</span><span class="skill-tag">EKA</span></li>
+              <li class="skill">Redux</li>
+              <li class="skill">TypeScript</li>
+              <li class="skill">JavaScript</li>
+              <li class="skill">HTML</li>
+              <li class="skill">CSS</li>
+            </ul>
+          </div>
+          <div class="skill-group" data-group="Databases">
+            <h3>Databases</h3>
+            <ul class="skill-list">
+              <li class="skill">PostgreSQL <span class="skill-tag">AA</span><span class="skill-tag">Amex</span><span class="skill-tag">EKA</span></li>
+              <li class="skill">MySQL <span class="skill-tag">Amex</span></li>
+              <li class="skill">MongoDB <span class="skill-tag">AA</span><span class="skill-tag">Amex</span></li>
+              <li class="skill">DynamoDB</li>
+              <li class="skill">Redis</li>
+              <li class="skill">SQL <span class="skill-tag">AA</span><span class="skill-tag">Amex</span></li>
+            </ul>
+          </div>
+          <div class="skill-group" data-group="Cloud and DevOps">
+            <h3>Cloud and DevOps</h3>
+            <ul class="skill-list">
+              <li class="skill">AWS (Lambda, EC2, S3, Bedrock)</li>
+              <li class="skill">Azure</li>
+              <li class="skill">Docker</li>
+              <li class="skill">Kubernetes</li>
+              <li class="skill">CI/CD <span class="skill-tag">AA</span><span class="skill-tag">Amex</span></li>
+              <li class="skill">Jenkins <span class="skill-tag">Amex</span></li>
+              <li class="skill">GitHub Actions</li>
+            </ul>
+          </div>
+          <div class="skill-group" data-group="Practices">
+            <h3>Practices</h3>
+            <ul class="skill-list">
+              <li class="skill">Git <span class="skill-tag">AA</span><span class="skill-tag">Amex</span></li>
+              <li class="skill">GitHub</li>
+              <li class="skill">Agile/Scrum <span class="skill-tag">AA</span></li>
+              <li class="skill">OpenAPI/Swagger <span class="skill-tag">Amex</span></li>
+              <li class="skill">Postman</li>
+              <li class="skill">Unit and integration testing <span class="skill-tag">Amex</span></li>
+              <li class="skill">Code review <span class="skill-tag">Amex</span></li>
+            </ul>
+          </div>
+        </div>
+        <p class="skills-legend">AA: American Airlines role. Amex: American Express role. EKA: Enterprise Knowledge Assistant. Skills without a tag are listed but not tied to a specific role or project.</p>
+        <p class="placeholder-note">Placeholder: please check the tags. EKA tags on Python and PostgreSQL are inferred from FastAPI and pgvector.</p>
+      </div>
+    </section>
+
+    <!-- 5. Projects -->
+    <section id="projects" class="section" aria-labelledby="projects-title">
+      <div class="wrap">
+        <h2 id="projects-title" class="section-title">Projects</h2>
+        <div class="grid-3">
+          <article class="card card-lead">
+            <h3>Enterprise Knowledge Assistant</h3>
+            <p class="card-meta">American Airlines. Employer work, described in general terms.</p>
+            <p>One place for employees to ask about internal documentation, policies and system data: retrieval with pgvector, an agent layer for follow-up actions, and a custom MCP server.</p>
+            <ul class="tags" aria-label="Stack">
+              <li>Python</li><li>FastAPI</li><li>React</li><li>PostgreSQL + pgvector</li><li>MCP</li>
+            </ul>
+            <p style="margin-top:1rem"><a href="project-eka.html">Read more</a></p>
+          </article>
+          <article class="card">
+            <h3>AI tools for enterprise operations</h3>
+            <p class="card-meta">American Airlines. February 2025 to present.</p>
+            <p>Built Python services and AI features for operations, customer support and internal automation; RAG pipelines over internal knowledge bases; agents that automate multi-step workflows; MCP servers for secure access to internal data; React dashboards to monitor and check agent output.</p>
+            <p>Also set internal standards for MCP integration patterns and prompt versioning.</p>
+            <p><a href="#aa">See role details</a></p>
+          </article>
+          <article class="card">
+            <h3>Fraud and risk backend services</h3>
+            <p class="card-meta">American Express. June 2021 to December 2023.</p>
+            <p>Built backend services and APIs for fraud detection, risk scoring and analytics; connected machine learning models to real-time scoring; worked with data science teams to move models from prototype to production.</p>
+            <p><a href="#amex">See role details</a></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Notes -->
+    <section id="notes" class="section band" aria-labelledby="notes-title">
+      <div class="wrap">
+        <h2 id="notes-title" class="section-title">Notes</h2>
+        <p class="placeholder-note">Placeholder: every note below is a draft opinion. Approve, rewrite or drop each one. Unapproved notes are hidden on the real site.</p>
+        <div class="notes" style="margin-top:1rem">
+          <article class="card">
+            <h3>Chunking is a design decision</h3>
+            <p class="card-body">When retrieval returns the wrong passages, a better prompt rarely saves the answer. That is why I treat chunking and the choice of embedding model as real design decisions and evaluate them on their own.</p>
+          </article>
+          <article class="card">
+            <h3>People need to see what an agent did</h3>
+            <p class="card-body">An agent that takes actions should leave a record a person can read. That is why I build screens where users can watch and check agent output. Without that, it is hard to trust an agent with real work.</p>
+          </article>
+          <article class="card">
+            <h3>A prompt change is a behavior change</h3>
+            <p class="card-body">Changing a prompt can change behavior as much as changing code. I set standards for prompt versioning for that reason.</p>
+          </article>
+          <article class="card">
+            <h3>Why I set MCP standards</h3>
+            <p class="card-body">When each AI tool writes its own connector to the same data, the connectors drift apart, each with its own access rules. A shared MCP server gives every tool the same context and the same rules.</p>
+          </article>
+          <article class="card">
+            <h3>AI endpoints still need ordinary API security</h3>
+            <p class="card-body">An endpoint that calls a language model is still an endpoint. It needs authentication, rate limits and access control like any other API, and often more, because each call costs money and the input is free text.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. About -->
+    <section id="about" class="section" aria-labelledby="about-title">
+      <div class="wrap narrow">
+        <h2 id="about-title" class="section-title">About</h2>
+        <p>I'm a backend engineer based in the Dallas area. I work on the parts of AI projects that run in production: getting the right data to the model, connecting it safely to real systems, and being able to see what it did. I have a master's in Applied Statistics and Data Science from UT Arlington.</p>
+        <p class="placeholder-note">Placeholder: draft text, waiting for your rewrite in your own voice.</p>
+      </div>
+    </section>
+
+    <!-- 8. Contact -->
+    <section id="contact" class="section band" aria-labelledby="contact-title">
+      <div class="wrap narrow">
+        <h2 id="contact-title" class="section-title">Contact</h2>
+        <ul class="contact-list">
+          <li><span class="contact-key">Email</span> <a href="mailto:san.jay.kan.dim.lla@gmail.com">san.jay.kan.dim.lla@gmail.com</a></li>
+          <li><span class="contact-key">LinkedIn</span> <a href="https://www.linkedin.com/in/sanjay-kandimalla/">linkedin.com/in/sanjay-kandimalla</a></li>
+          <li><span class="contact-key">GitHub</span> <a href="https://github.com/codewithsanjay-pixel">github.com/codewithsanjay-pixel</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Sanjay Kandimalla. Static prototype for review.</p>
+    </div>
+  </footer>
+
+  <script src="chat-mock.js" defer></script>
+  <script src="skills-filter.js" defer></script>
+</body>
+</html>

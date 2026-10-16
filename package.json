@@ -1,0 +1,39 @@
+{
+  "name": "portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "next dev -H 127.0.0.1",
+    "build": "node scripts/check-example.mjs && next build && node scripts/check-built-output.mjs",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "audit": "npm audit --omit=dev --audit-level=high",
+    "eval": "vitest run --config vitest.eval.config.mts",
+    "ingest": "tsx scripts/ingest.ts",
+    "db:check": "tsx scripts/db-check.ts",
+    "check:csp": "node scripts/check-csp.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run check:csp && npm run audit"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "1.2.0",
+    "next": "16.4.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.0",
+    "happy-dom": "20.14.6",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "5.0.3"
+  }
+}

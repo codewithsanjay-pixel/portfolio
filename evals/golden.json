@@ -1,0 +1,146 @@
+{
+  "description": "Questions about real resume facts. The answer must not be a refusal and must cite at least one expected chunk id (ids from lib/corpus/chunk.ts over docs/RESUME.md).",
+  "cases": [
+    {
+      "id": "g01-rag",
+      "question": "What have you built with RAG?",
+      "expect": "answer",
+      "cites_any": ["aa-built-and-optimized-rag-pipelines", "project-enterprise-knowledge-assistant", "summary-engineered-production-ai-llm-applications"],
+      "mention_any": ["pgvector", "RAG", "retrieval"],
+      "must_not_match": ["\\b(another|a different|a separate|other|different|separate)\\s+(project|role|job|position|employer|company|team)s?\\b|\\bat the same time\\b|\\bat a different (company|employer)\\b"]
+    },
+    {
+      "id": "g02-mcp",
+      "question": "Where have you used MCP?",
+      "expect": "answer",
+      "cites_any": ["aa-implemented-mcp-servers-to-standardize", "project-enterprise-knowledge-assistant"],
+      "mention_any": ["MCP", "Model Context Protocol"]
+    },
+    {
+      "id": "g03-security",
+      "question": "How have you secured AI integrations?",
+      "expect": "answer",
+      "cites_any": ["aa-secured-ai-integrations-by-implementing", "detail-mcp-server-security-american-airlines-every-request-to-the-mcp"],
+      "mention_any": ["authentication", "rate limiting", "access control", "token"]
+    },
+    {
+      "id": "g04-current-role",
+      "question": "Where do you work now, and what is your role?",
+      "expect": "answer",
+      "cites_any": ["aa-role"],
+      "mention_any": ["American Airlines"]
+    },
+    {
+      "id": "g05-amex",
+      "question": "When did you work at American Express and what did you do there?",
+      "expect": "answer",
+      "cites_any": ["amex-role", "amex-developed-backend-services-and-rest"],
+      "mention_any": ["2021", "fraud", "risk"]
+    },
+    {
+      "id": "g06-masters",
+      "question": "What did you study for your master's, where, and what was your GPA?",
+      "expect": "answer",
+      "cites_any": ["edu-m-s-applied-statistics-and"],
+      "mention_any": ["3.9"]
+    },
+    {
+      "id": "g07-years",
+      "question": "How many years of experience do you have?",
+      "expect": "answer",
+      "cites_any": ["amex-role", "aa-role"],
+      "mention_any": ["2021"]
+    },
+    {
+      "id": "g08-2024",
+      "question": "What were you doing in 2024?",
+      "expect": "answer",
+      "cites_any": ["edu-studied-full-time-from-january", "edu-m-s-applied-statistics-and"],
+      "mention_any": ["study", "studied", "M.S.", "master"]
+    },
+    {
+      "id": "g09-vector-dbs",
+      "question": "Which vector databases have you worked with?",
+      "expect": "answer",
+      "cites_any": ["skills-vector-embeddings", "aa-built-and-optimized-rag-pipelines"],
+      "mention_any": ["pgvector", "FAISS"]
+    },
+    {
+      "id": "g10-retrieval-quality",
+      "question": "How did you improve retrieval quality?",
+      "expect": "answer",
+      "cites_any": ["aa-evaluated-and-selected-embedding-models", "detail-retrieval-american-airlines-retrieval-used-a-bi-encoder-step"],
+      "mention_any": ["chunking", "embedding", "re-rank", "cross-encoder"]
+    },
+    {
+      "id": "g11-reranker",
+      "question": "Did you build your own re-ranker?",
+      "expect": "answer",
+      "cites_any": ["detail-retrieval-american-airlines-retrieval-used-a-bi-encoder-step"],
+      "mention_any": ["off-the-shelf", "cross-encoder"]
+    },
+    {
+      "id": "g12-mcp-auth",
+      "question": "How did your MCP server authenticate requests?",
+      "expect": "answer",
+      "cites_any": ["detail-mcp-server-security-american-airlines-every-request-to-the-mcp"],
+      "mention_any": ["single sign-on", "SSO", "token"]
+    },
+    {
+      "id": "g13-eka",
+      "question": "What is the Enterprise Knowledge Assistant?",
+      "expect": "answer",
+      "cites_any": ["project-enterprise-knowledge-assistant"],
+      "mention_any": ["documentation", "policies", "assistant"]
+    },
+    {
+      "id": "g14-llm-providers",
+      "question": "Which LLM providers and APIs have you used?",
+      "expect": "answer",
+      "cites_any": ["skills-llm-platforms-apis", "aa-engineered-ai-llm-applications-end"],
+      "mention_any": ["OpenAI", "Azure"]
+    },
+    {
+      "id": "g15-prompting",
+      "question": "What prompt engineering techniques do you use?",
+      "expect": "answer",
+      "cites_any": ["aa-applied-prompt-engineering-techniques-including", "summary-applied-prompt-engineering-to-improve"],
+      "mention_any": ["few-shot", "system prompt", "chain-of-thought"]
+    },
+    {
+      "id": "g16-agents",
+      "question": "Have you built AI agents? What did they do?",
+      "expect": "answer",
+      "cites_any": ["aa-architected-and-deployed-ai-agents", "project-enterprise-knowledge-assistant"],
+      "mention_any": ["tool", "workflow", "ticket"]
+    },
+    {
+      "id": "g17-amex-ml",
+      "question": "What machine learning work did you do at American Express?",
+      "expect": "answer",
+      "cites_any": ["amex-assembled-data-pipelines-to-integrate", "amex-partnered-with-data-science-teams"],
+      "mention_any": ["scikit-learn", "fraud", "model"]
+    },
+    {
+      "id": "g18-standards",
+      "question": "What engineering standards did you set?",
+      "expect": "answer",
+      "cites_any": ["aa-established-internal-engineering-standards-for", "detail-engineering-standards-american-airlines-several-patterns-i-documented-became"],
+      "mention_any": ["prompt versioning", "MCP", "input schema"]
+    },
+    {
+      "id": "g19-frontend",
+      "question": "What frontend work have you done?",
+      "expect": "answer",
+      "cites_any": ["skills-frontend", "aa-developed-react-based-interfaces-and-dashboards", "amex-delivered-full-stack-features-using"],
+      "mention_any": ["React"]
+    },
+    {
+      "id": "g20-contact",
+      "question": "How can I contact you?",
+      "expect": "answer",
+      "cites_any": ["profile"],
+      "mention_any": ["san.jay.kan.dim.lla@gmail.com", "LinkedIn"]
+    }
+  ]
+}
