@@ -111,7 +111,7 @@ An item that also carries [CONFIRM] is not published until I confirm it, whateve
 - [PUBLIC-GENERAL] Reuse: other internal AI tools used the same MCP server instead of building their own integrations to the same systems. That was one of the reasons I designed the MCP layer as a shared piece. (Confirmed by me 2026-10-19.)
 
 ### Cloud (American Airlines)
-- [PUBLIC-GENERAL] The AI integrations ran on AWS. I used Lambda for serverless functions and S3 for the documents that fed the retrieval pipeline, and the deployment ran on EC2. I also used Azure OpenAI Service for language model integration. (Confirmed by me 2026-10-19.)
+- [PUBLIC-GENERAL] The AI integrations at American Airlines, including the Enterprise Knowledge Assistant, ran on AWS. I used Lambda for serverless functions and S3 for the documents that fed the retrieval pipeline, and the deployment ran on EC2. I also used Azure OpenAI Service for language model integration. (Confirmed by me 2026-10-19.)
 - [PUBLIC-GENERAL] Platform engineering owned the AWS environment. My work used these services at the application layer: I configured how the AI services connected to and used them. I did not provision or manage the underlying infrastructure. (Confirmed by me 2026-10-19.)
 
 ### Enterprise Knowledge Assistant rollout
