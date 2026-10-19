@@ -107,6 +107,14 @@ describe("check-built-output", () => {
     expect(publicEnvNames({ NEXT_PUBLIC_API_KEY: "x", OPENAI_API_KEY: "y" })).toEqual(["NEXT_PUBLIC_API_KEY"]);
   });
 
+  it("allows only Vercel's own monitoring variable, and only on a Vercel build (ADR 010)", () => {
+    const platform = "NEXT_PUBLIC_VERCEL_OBSERVABILITY_CLIENT_CONFIG";
+    expect(publicEnvNames({ VERCEL_ENV: "production", [platform]: "x" })).toEqual([]);
+    expect(publicEnvNames({ [platform]: "x" })).toEqual([platform]);
+    expect(publicEnvNames({ VERCEL_ENV: "production", [platform]: "x", NEXT_PUBLIC_API_KEY: "y" })).toEqual(["NEXT_PUBLIC_API_KEY"]);
+    expect(publicEnvNames({ VERCEL_ENV: "production", NEXT_PUBLIC_VERCEL_URL: "x" })).toEqual(["NEXT_PUBLIC_VERCEL_URL"]);
+  });
+
   it("reports nothing when no secrets are available", () => {
     expect(findSecrets(fakeBuild({ "static/a.js": "x" }), secretValues({}))).toEqual([]);
   });
