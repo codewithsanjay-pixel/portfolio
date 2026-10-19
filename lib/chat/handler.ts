@@ -65,3 +65,11 @@ export function describeCitations(ids: readonly string[]): { id: string; section
   labels ??= new Map(loadResumeChunks().map((c) => [c.id, citationLabel(c.context)]));
   return ids.filter((id) => labels!.has(id)).map((id) => ({ id, section: labels!.get(id)! }));
 }
+
+// Retrieval rows for the public trace: section heading and score, never ids or text.
+export function describeRetrieval(items: { id: string; score: number }[], cited: readonly string[]) {
+  labels ??= new Map(loadResumeChunks().map((c) => [c.id, citationLabel(c.context)]));
+  return items
+    .filter((x) => labels!.has(x.id))
+    .map((x) => ({ section: labels!.get(x.id)!, score: x.score, cited: cited.includes(x.id) }));
+}

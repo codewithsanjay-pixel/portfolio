@@ -1,4 +1,5 @@
 import { ChatPanel } from "@/components/chat-panel";
+import { Pipeline } from "@/components/pipeline";
 import { ProjectCard } from "@/components/project-card";
 import { Section } from "@/components/section";
 import { SkillsExplorer } from "@/components/skills-explorer";
@@ -28,6 +29,10 @@ export default function Home() {
         </div>
         <ChatPanel text={chat} />
       </section>
+
+      <Section id="pipeline" title="How the chat works">
+        <Pipeline />
+      </Section>
 
       <Section id="focus" title="Focus" band>
         <div className="grid-3">

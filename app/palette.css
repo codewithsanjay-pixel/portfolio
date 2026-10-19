@@ -1,0 +1,67 @@
+/* Command palette. Uses the theme variables from globals.css. */
+.palette-trigger {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font: inherit; font-size: 0.875rem;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 0.35rem 0.85rem; cursor: pointer;
+}
+.palette-trigger:hover { border-color: var(--accent); }
+.palette-trigger:focus-visible,
+.palette-input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.palette-kbd {
+  font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);
+  border: 1px solid var(--border); border-radius: 4px; padding: 0 0.3rem;
+}
+@media (max-width: 40rem) {
+  .palette-kbd { display: none; }
+}
+
+.palette {
+  position: fixed; inset: 0;
+  margin: 10vh auto auto;
+  width: min(36rem, calc(100% - 2rem)); max-width: none;
+  padding: 0; overflow: hidden;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+.palette:not([open]) { display: none; }
+.palette::backdrop { background: rgba(0, 0, 0, 0.5); }
+
+.palette-body { display: flex; flex-direction: column; max-height: 70vh; }
+.palette-input {
+  font: inherit; font-size: 1rem; width: 100%;
+  background: var(--surface); color: var(--text);
+  border: 0; border-bottom: 1px solid var(--border); border-radius: 0;
+  padding: 0.9rem 1rem;
+}
+.palette-input::placeholder { color: var(--muted); }
+.palette-input:focus-visible { outline-offset: -2px; }
+
+.palette-list { list-style: none; margin: 0; padding: 0.35rem; overflow-y: auto; }
+.palette-option {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+  padding: 0.6rem 0.75rem; border-radius: calc(var(--radius) - 3px); cursor: pointer;
+}
+.palette-option[aria-selected="true"] { background: var(--accent-soft); color: var(--text); }
+.palette-hint { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+.palette-empty { margin: 0; padding: 1rem; color: var(--muted); }
+
+@media (max-width: 40rem) {
+  .palette { width: 100%; margin-top: 0; border-radius: 0 0 var(--radius) var(--radius); border-left: 0; border-right: 0; }
+  .palette-body { max-height: 80vh; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .palette[open] { animation: palette-in 120ms ease-out; }
+  .palette-option { transition: background-color 80ms; }
+}
+@keyframes palette-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (forced-colors: active) {
+  .palette-option[aria-selected="true"] { outline: 2px solid Highlight; background: Highlight; color: HighlightText; }
+}

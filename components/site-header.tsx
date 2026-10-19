@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { NavLink } from "@/lib/nav";
+import { CommandPalette } from "./command-palette";
 import { ThemeToggle } from "./theme-toggle";
 
 type Props = {
@@ -26,6 +27,7 @@ export function SiteHeader({ name, homeHref, links }: Props) {
             ))}
           </ul>
         </nav>
+        <CommandPalette />
         <ThemeToggle />
       </div>
     </header>

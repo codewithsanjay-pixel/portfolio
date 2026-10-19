@@ -40,7 +40,7 @@ const refusal = { refused: true, answer: REFUSAL_MESSAGE, citations: [] };
 describe("answerQuestion", () => {
   it("answers from retrieved chunks with verified citations", async () => {
     const { d } = deps([chunk("aa-role", 0.6), chunk("profile", 0.4)], { ...good, citations: ["aa-role", "aa-role"] });
-    expect(await answerQuestion("Where do you work?", d)).toEqual({
+    expect(await answerQuestion("Where do you work?", d)).toMatchObject({
       refused: false,
       answer: "I work at American Airlines.",
       citations: ["aa-role"],

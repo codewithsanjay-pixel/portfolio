@@ -1,6 +1,9 @@
 // Renders every real page and checks what a visitor would see.
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+// The command palette in the header uses the app router, which is not mounted in these renders.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {} }) }));
 import SiteLayout from "@/app/(site)/layout";
 import Home from "@/app/(site)/page";
 import EkaPage from "@/app/(site)/projects/enterprise-knowledge-assistant/page";
@@ -41,7 +44,7 @@ describe("home page", () => {
 
   it("has sections in the spec order", () => {
     const ids = [...pages.home.matchAll(/<section id="([^"]+)"/g)].map((m) => m[1]);
-    expect(ids).toEqual(["focus", "experience", "skills", "projects", "about", "contact"]);
+    expect(ids).toEqual(["pipeline", "focus", "experience", "skills", "projects", "about", "contact"]);
   });
 
   it("puts role detail inside expandable details", () => {

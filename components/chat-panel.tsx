@@ -10,6 +10,7 @@
 //   with a timeout. Oversized responses are dropped.
 // - Nothing is stored: no localStorage, no analytics.
 import { useId, useRef, useState, type FormEvent } from "react";
+import { TracePanel, traceFrom, type Trace } from "./trace-panel";
 
 export type ChatPanelText = {
   title: string;
@@ -29,7 +30,7 @@ export type ChatPanelText = {
 };
 
 type Citation = { id: string; section: string };
-type Exchange = { id: number; question: string } & (
+type Exchange = { id: number; question: string; trace?: Trace } & (
   | { kind: "answer"; text: string; citations: Citation[] }
   | { kind: "refusal" | "error"; text: string }
 );
@@ -72,11 +73,11 @@ export function ChatPanel({ text }: { text: ChatPanelText }) {
         signal: AbortSignal.timeout(TIMEOUT_MS),
       });
       const data: unknown = await res.json().catch(() => null);
-      const body = (data ?? {}) as { refused?: unknown; answer?: unknown; citations?: unknown; error?: unknown };
+      const body = (data ?? {}) as { refused?: unknown; answer?: unknown; citations?: unknown; trace?: unknown; error?: unknown };
       if (res.ok && body.refused === true) {
-        entry = { id, question: q, kind: "refusal", text: text.refusal };
+        entry = { id, question: q, kind: "refusal", text: text.refusal, trace: traceFrom(body.trace) ?? undefined };
       } else if (res.ok && typeof body.answer === "string" && body.answer.length > 0 && body.answer.length <= MAX_ANSWER_CHARS) {
-        entry = { id, question: q, kind: "answer", text: body.answer, citations: citationsFrom(body.citations) };
+        entry = { id, question: q, kind: "answer", text: body.answer, citations: citationsFrom(body.citations), trace: traceFrom(body.trace) ?? undefined };
       } else {
         const known = typeof body.error === "string" && text.errors.includes(body.error);
         entry = { id, question: q, kind: "error", text: known ? (body.error as string) : text.fallbackError };
@@ -121,6 +122,7 @@ export function ChatPanel({ text }: { text: ChatPanelText }) {
                   </ul>
                 </div>
               ) : null}
+              {x.trace ? <TracePanel trace={x.trace} /> : null}
             </div>
           </div>
         ))}

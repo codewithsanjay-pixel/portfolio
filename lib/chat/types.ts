@@ -11,6 +11,15 @@ export type ChatResult = {
   retrieved: string[];
   // Internal only, never returned by the route: which step produced the result.
   stage?: ChatStage;
+  // Internal timings and similarity scores. The route turns this into the public
+  // trace (lib/chat/trace.ts), which hides the exact stage of a refusal.
+  trace?: ChatTrace;
+};
+
+export type ChatTrace = {
+  retrieved: { id: string; score: number }[];
+  retrieveMs: number;
+  modelMs: number;
 };
 
 export type ChatStage = "input" | "scope" | "model" | "citations" | "guard" | "private" | "grounding" | "answered";

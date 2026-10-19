@@ -15,6 +15,8 @@ vi.mock("@/lib/ratelimit", async (orig) => ({
 vi.mock("@/lib/chat/handler", () => ({
   handleChat: (q: string) => handleChat(q),
   describeCitations: (ids: string[]) => ids.map((id) => ({ id, section: "Experience" })),
+  describeRetrieval: (items: { id: string; score: number }[], cited: string[]) =>
+    items.map((x) => ({ section: x.id === "aa-role" ? "Experience" : "Profile", score: x.score, cited: cited.includes(x.id) })),
 }));
 vi.mock("@/lib/chat/log", () => ({ logChat: () => {} }));
 
@@ -31,7 +33,7 @@ function req(body: string, headers: Record<string, string> = {}) {
 beforeEach(() => {
   vi.stubEnv("VERCEL", "1");
   check.mockReset().mockResolvedValue({ ok: true });
-  handleChat.mockReset().mockResolvedValue({ refused: false, answer: "I work at American Airlines.", citations: ["aa-role"], retrieved: ["aa-role", "profile"] });
+  handleChat.mockReset().mockResolvedValue({ refused: false, answer: "I work at American Airlines.", citations: ["aa-role"], retrieved: ["aa-role", "profile"], stage: "answered", trace: { retrieved: [{ id: "aa-role", score: 0.61 }, { id: "profile", score: 0.4 }], retrieveMs: 80, modelMs: 900 } });
 });
 
 describe("POST /api/chat", () => {
@@ -39,7 +41,15 @@ describe("POST /api/chat", () => {
     const res = await POST(req(JSON.stringify({ question: "  Where do you work?  " })));
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("no-store");
-    expect(await res.json()).toEqual({ refused: false, answer: "I work at American Airlines.", citations: [{ id: "aa-role", section: "Experience" }] });
+    const body = await res.json();
+    expect(body).toMatchObject({ refused: false, answer: "I work at American Airlines.", citations: [{ id: "aa-role", section: "Experience" }] });
+    expect(body.trace.retrieval).toEqual([
+      { section: "Experience", score: 0.61, cited: true },
+      { section: "Profile", score: 0.4, cited: false },
+    ]);
+    expect(body.trace.steps.every((x: { status: string }) => x.status === "pass")).toBe(true);
+    // Section headings and scores only: no chunk ids or passage text.
+    expect(JSON.stringify(body.trace)).not.toMatch(/aa-role|profile"/);
     expect(handleChat).toHaveBeenCalledWith("Where do you work?");
   });
 

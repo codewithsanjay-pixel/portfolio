@@ -4,7 +4,8 @@
 // 3. input check, retrieval, scope check, answer, citation check and output guard
 //    (lib/chat/answer.ts, ADR 008)
 // Errors reveal nothing about internals.
-import { describeCitations, handleChat } from "@/lib/chat/handler";
+import { describeCitations, describeRetrieval, handleChat } from "@/lib/chat/handler";
+import { buildTrace } from "@/lib/chat/trace";
 import { logChat } from "@/lib/chat/log";
 import { clientIp, createRateLimiter, type RateLimiter } from "@/lib/ratelimit";
 
@@ -78,7 +79,12 @@ export async function POST(request: Request): Promise<Response> {
     const result = await handleChat(question);
     logChat({ event: result.refused ? "refused" : "answered", ms: Date.now() - started, citations: result.citations.length }, question);
     return Response.json(
-      { refused: result.refused, answer: result.answer, citations: describeCitations(result.citations) },
+      {
+        refused: result.refused,
+        answer: result.answer,
+        citations: describeCitations(result.citations),
+        trace: buildTrace(result, describeRetrieval, Date.now() - started),
+      },
       { headers: NO_STORE },
     );
   } catch (err) {

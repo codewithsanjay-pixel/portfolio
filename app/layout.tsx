@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
+import "./palette.css";
+import "./pipeline.css";
 
 export const metadata: Metadata = {
   title: "Sanjay Kandimalla",

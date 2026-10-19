@@ -5,7 +5,7 @@ import { normalize } from "../safety/normalize.mjs";
 import type { AnswerModel } from "../llm";
 import type { RetrievedChunk } from "../retrieve";
 import { SYSTEM_PROMPT } from "./prompt";
-import { REFUSAL_MESSAGE, SYSTEM_PROMPT_CANARY, type ChatResult, type ChatStage } from "./types";
+import { REFUSAL_MESSAGE, SYSTEM_PROMPT_CANARY, type ChatResult, type ChatStage, type ChatTrace } from "./types";
 
 export type ChatDeps = {
   retrieve(question: string): Promise<RetrievedChunk[]>;
@@ -241,21 +241,32 @@ export function scriptsTheAnswer(question: string): boolean {
 // ------------------------------------------------------------------- the flow
 
 export async function answerQuestion(question: string, deps: ChatDeps): Promise<ChatResult> {
+  const trace: ChatTrace = { retrieved: [], retrieveMs: 0, modelMs: 0 };
+  const result = await runFlow(question, deps, trace);
+  return { ...result, trace };
+}
+
+async function runFlow(question: string, deps: ChatDeps, trace: ChatTrace): Promise<ChatResult> {
   // Input check (ADR 008), before any spend: hidden or lookalike characters, and
   // questions that script the answer.
   if (hasUnexpectedCharacters(question, "\n\r\t") || scriptsTheAnswer(question)) return refusal([], "input");
 
   // Steps 2 and 3: retrieve, and refuse if nothing in the corpus is close enough.
+  const t0 = Date.now();
   const chunks = await deps.retrieve(question);
+  trace.retrieveMs = Date.now() - t0;
+  trace.retrieved = chunks.map((c) => ({ id: c.id, score: Math.round(c.score * 10) / 10 }));
   const retrieved = chunks.map((c) => c.id);
   if (chunks.length === 0 || chunks[0].score < deps.minScore) return refusal(retrieved, "scope");
 
   // Step 4: answer from the retrieved chunks only.
+  const t1 = Date.now();
   const out = await deps.model.answer({
     system: SYSTEM_PROMPT,
     question,
     sources: chunks.map(({ id, context, text }) => ({ id, context, text })),
   });
+  trace.modelMs = Date.now() - t1;
   if (out.refused) return refusal(retrieved, "model");
 
   // Step 5: verify citations on the server.
