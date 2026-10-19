@@ -11,7 +11,7 @@ import HowItsBuilt from "@/app/(site)/how-its-built/page";
 import TrustPage from "@/app/(site)/trust/page";
 import pkg from "@/package.json";
 import { FORBIDDEN } from "@/scripts/check-built-output.mjs";
-import { eka, focus, howItsBuilt, links, person, proofStrip, timeline } from "@/content/site";
+import { eka, focus, howItsBuilt, links, person, proofStrip, skillGroups, timeline } from "@/content/site";
 
 const EXAMPLE_MARKERS = ["Alex Sample", "Example Airline", "Example Payments"];
 
@@ -64,6 +64,13 @@ describe("home page", () => {
 
   it("puts role detail inside expandable details", () => {
     expect((pages.home.match(/<details>/g) ?? []).length).toBe(2);
+  });
+
+  it("keeps skills in the HTML behind one closed disclosure", () => {
+    const m = pages.home.match(/<details class="disclosure skills-disclosure">([\s\S]*?)<\/details>/);
+    expect(m).not.toBeNull();
+    expect(m![1]).toContain("Show skills by area");
+    for (const g of skillGroups) expect(text(m![1])).toContain(g.name);
   });
 
   it("links contact details and the project page", () => {

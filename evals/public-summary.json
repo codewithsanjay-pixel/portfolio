@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-19T17:45:38.982Z",
+  "commit": null,
+  "sets": {
+    "golden": { "cases": 20, "passed": 20 },
+    "scope": { "cases": 10, "passed": 10 },
+    "injection": { "cases": 10, "passed": 10 },
+    "extra": { "cases": 31, "passed": 31 }
+  }
+}

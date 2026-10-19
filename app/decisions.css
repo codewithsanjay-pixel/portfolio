@@ -1,0 +1,22 @@
+/* Decisions table on /how-its-built. Colour variables only; no inline styles (CSP, ADR 009). */
+.decision-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.decision-table th,
+.decision-table td { text-align: left; vertical-align: top; padding: 0.7rem 0.75rem; border-bottom: 1px solid var(--border); }
+.decision-table tbody th { font-weight: 600; color: var(--text); }
+.decision-table thead th { color: var(--muted); font-weight: 600; }
+
+@media (max-width: 40rem) {
+  .decision-table,
+  .decision-table tbody,
+  .decision-table tr,
+  .decision-table th,
+  .decision-table td { display: block; width: 100%; }
+  .decision-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .decision-table tr { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.4rem 0.2rem; margin-top: 0.9rem; }
+  .decision-table th,
+  .decision-table td { border-bottom: 0; padding: 0.4rem 0.8rem; }
+  .decision-table tbody th { font-size: 1rem; }
+  .decision-table td::before,
+  .decision-table tbody th::before { content: attr(data-label); display: block; font-size: 0.78rem; color: var(--muted); font-weight: 600; margin-bottom: 0.1rem; }
+  .decision-table td a { overflow-wrap: anywhere; }
+}

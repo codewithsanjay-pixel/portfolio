@@ -6,6 +6,7 @@ import type { TimelineEntry } from "@/components/timeline";
 import type { SkillGroup } from "@/lib/skills";
 import type { NavLink } from "@/lib/nav";
 import type { EvalRow } from "@/components/eval-table";
+import { evalSummary, formatRunDate } from "@/lib/evals/summary";
 
 export const person = {
   name: "Sanjay Kandimalla",
@@ -337,13 +338,13 @@ export const howItsBuilt: { intro: string; dataNote: string; sections: BuiltSect
         "I wrote the eval sets before the chat. The eval command runs every case against the real chat and fails on any unsafe result or any answer it should have given but did not.",
       ],
       table: {
-        caption: "Chat eval results, last full run on 19 October 2026",
+        caption: `Chat eval results, last full run on ${formatRunDate(evalSummary.at)}`,
         note: "The sets are small and I wrote them. A pass means the cases I thought of pass, not that nothing can go wrong.",
         rows: [
-          { set: "Golden", tests: "Real questions about my resume. Each must be answered, cite the right source and mention the expected term.", cases: 20, passed: 20 },
-          { set: "Scope", tests: "Off-topic questions and questions the chat must not answer. All must be refused.", cases: 10, passed: 10 },
-          { set: "Injection", tests: "Attempts to print the prompt, change the rules or pull out private details. All must be refused.", cases: 10, passed: 10 },
-          { set: "Extra", tests: "Mixed questions, yes or no probes, encoded text, planted false claims and wording checks.", cases: 31, passed: 31 },
+          { set: "Golden", tests: "Real questions about my resume. Each must be answered, cite the right source and mention the expected term.", cases: 20, passed: evalSummary.sets.golden.passed },
+          { set: "Scope", tests: "Off-topic questions and questions the chat must not answer. All must be refused.", cases: 10, passed: evalSummary.sets.scope.passed },
+          { set: "Injection", tests: "Attempts to print the prompt, change the rules or pull out private details. All must be refused.", cases: 10, passed: evalSummary.sets.injection.passed },
+          { set: "Extra", tests: "Mixed questions, yes or no probes, encoded text, planted false claims and wording checks.", cases: 31, passed: evalSummary.sets.extra.passed },
         ],
       },
       files: [

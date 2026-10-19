@@ -7,7 +7,7 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ChatPanel } from "@/components/chat-panel";
-import { chat } from "@/content/site";
+import { chat, links } from "@/content/site";
 import { REFUSAL_MESSAGE } from "@/lib/chat/types";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -296,6 +296,108 @@ describe("ChatPanel", () => {
       await render();
       await ask("q");
       expect(log().textContent).toContain("Too many questions. Please try again later.");
+    });
+  });
+
+  describe("unavailable state", () => {
+    const DOWN = "The assistant is not available right now. Please try again later.";
+    const ok = { refused: false, answer: "Back again.", citations: [] };
+    const banner = () => container.querySelector('[role="status"]')!;
+    const submit = () => container.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const tick = (ms: number) => act(async () => { await vi.advanceTimersByTimeAsync(ms); });
+
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    it("shows the banner on a 503, with a mailto link and the known message in the log", async () => {
+      vi.stubGlobal("fetch", respond(503, { error: DOWN }));
+      await render();
+      expect(banner().textContent).toBe("");
+      await ask("q");
+      expect(banner().textContent).toContain("The assistant is not available right now.");
+      expect(banner().textContent).toContain("You can still reach me by email.");
+      expect(banner().querySelector("a")!.getAttribute("href")).toBe(`mailto:${links.email}`);
+      expect(log().textContent).toContain(DOWN);
+    });
+
+    it("shows the banner when the request cannot reach the server", async () => {
+      vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("offline"); }));
+      await render();
+      await ask("q");
+      expect(banner().textContent).toContain("The assistant is not available right now.");
+    });
+
+    it("does not show the banner on a 429", async () => {
+      vi.stubGlobal("fetch", respond(429, { error: "Too many questions. Please try again later." }));
+      await render();
+      await ask("q");
+      expect(log().textContent).toContain("Too many questions.");
+      expect(banner().textContent).toBe("");
+      expect(submit().textContent).toBe(chat.ask);
+    });
+
+    it("keeps the banner through a 429 and clears it after a later success", async () => {
+      vi.stubGlobal("fetch", respond(503, { error: DOWN }));
+      await render();
+      await ask("q1");
+      await tick(5000);
+      vi.stubGlobal("fetch", respond(429, { error: "Too many questions. Please try again later." }));
+      await ask("q2");
+      expect(banner().textContent).toContain("not available");
+      await tick(5000);
+      vi.stubGlobal("fetch", respond(200, ok));
+      await ask("q3");
+      expect(log().textContent).toContain("Back again.");
+      expect(banner().textContent).toBe("");
+    });
+
+    it("pauses Ask and the starters for 5 seconds with a visible countdown", async () => {
+      const fetchMock = respond(503, { error: DOWN });
+      vi.stubGlobal("fetch", fetchMock);
+      await render();
+      await ask("q");
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(submit().disabled).toBe(true);
+      expect(submit().textContent).toBe("Try again in 5 s");
+      expect(container.querySelector<HTMLButtonElement>(".chip")!.disabled).toBe(true);
+      // The question is kept, and a submit during the pause sends nothing.
+      expect(container.querySelector("input")!.value).toBe("q");
+      await ask("q");
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      await tick(2000);
+      expect(submit().textContent).toBe("Try again in 3 s");
+      await tick(3000);
+      expect(submit().textContent).toBe(chat.ask);
+      expect(submit().disabled).toBe(false);
+      expect(container.querySelector<HTMLButtonElement>(".chip")!.disabled).toBe(false);
+      expect(banner().textContent).toContain("not available");
+      await act(async () => submit().form!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })));
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("stops the countdown timer on unmount and stores nothing", async () => {
+      const setItem = vi.spyOn(Storage.prototype, "setItem");
+      vi.stubGlobal("fetch", respond(503, { error: DOWN }));
+      await render();
+      await ask("q");
+      expect(vi.getTimerCount()).toBe(1);
+      act(() => root.unmount());
+      expect(vi.getTimerCount()).toBe(0);
+      root = createRoot(container);
+      expect(setItem).not.toHaveBeenCalled();
+      setItem.mockRestore();
+    });
+
+    it("uses a polite status region, not an alert, always present in the page", async () => {
+      vi.stubGlobal("fetch", respond(503, { error: DOWN }));
+      await render();
+      expect(container.querySelector('[role="alert"]')).toBeNull();
+      expect(container.querySelectorAll('[role="status"]')).toHaveLength(1);
+      await ask("q");
+      expect(container.querySelector('[role="alert"]')).toBeNull();
+      expect(container.querySelectorAll('[role="status"]')).toHaveLength(1);
+      expect(banner().compareDocumentPosition(container.querySelector("form")!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(container.querySelector("[style]")).toBeNull();
     });
   });
 });

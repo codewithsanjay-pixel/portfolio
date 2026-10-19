@@ -199,6 +199,9 @@ Network or unexpected error: Something went wrong. Please try again later.
 - Service down: The assistant is not available right now. Please try again later.
 - Anything else: Something went wrong. Please try again later.
 
+## Chat assistant: unavailable banner (ADR 017)
+Shown when the service is down (503) or the network fails or times out. Text: "The assistant is not available right now." and "You can still reach me by email." (mailto link). Ask and the starter questions are disabled for 5 seconds with the label "Try again in N s". Rate limiting (429) shows no banner. The typed question is kept. A later success clears the banner.
+
 ## Chat assistant: citation labels
 Each citation shows the last part of its resume heading, cut at the first colon. For example "Retrieval (American Airlines)", "Enterprise Knowledge Assistant", or "Software Development Engineer. American Airlines. Dallas, TX (Remote). February 2025 to present". The text of the cited lines is not shown.
 
@@ -298,6 +301,12 @@ Files: docs/SPEC.md, docs/adr/002-stack.md, package.json, components/skills-expl
 - The chat answers about my work only. It does not know how this site is built. This page is for that.
 
 Files: docs/adr/008-scope-check-by-retrieval.md, lib/chat/answer.ts, evals/README.md
+
+## Home page skills (ADR 015)
+The skills explorer sits inside a closed disclosure labeled "Show skills by area".
+
+## How it's built: decisions table (ADR 016, 017)
+Section: Decisions and what I rejected. Intro: "Each row comes from a decision record in the repository. Where a record names no alternative, the table says so instead of guessing." Columns: Decision, What I chose, What I did not choose and why, Record. Rows are in content/decisions.ts, one per ADR from 001 to 017. ADR 000 is left out because it is a process rule. The eval counts and the date in the results table come from evals/public-summary.json, written by npm run eval.
 
 ## Navigation (ADR 014)
 Header links, in order: Focus, Experience, Skills, Projects, About, Contact, How it's built, Trust, MCP. Trust goes to /trust. MCP goes to /mcp (copy below). Command palette: "Go to How the chat works", "Go to Trust and limits" and "Go to MCP".

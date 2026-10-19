@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { decisionColumns, decisions } from "@/content/decisions";
 import { about, howItsBuilt } from "@/content/site";
 
 const root = process.cwd();
@@ -42,5 +43,22 @@ describe("how it's built page", () => {
   it("uses no em dashes or en dashes in visitor text", () => {
     const text = JSON.stringify([howItsBuilt, about]);
     expect(text).not.toMatch(/[–—]/);
+  });
+});
+
+describe("how it's built eval table source", () => {
+  it("matches evals/public-summary.json", async () => {
+    const { evalSummary } = await import("@/lib/evals/summary");
+    const table = howItsBuilt.sections.find((s) => s.table)!.table!;
+    for (const row of table.rows) {
+      expect(row.passed, row.set).toBe(evalSummary.sets[row.set.toLowerCase() as "golden"].passed);
+    }
+  });
+
+  it("ends with a decisions section that has one row per decision", () => {
+    const pageSource = readFileSync(join(root, "app/(site)/how-its-built/page.tsx"), "utf8");
+    expect(pageSource).toContain("Decisions and what I rejected");
+    expect(decisions.length).toBeGreaterThanOrEqual(17);
+    expect(Object.values(decisionColumns)).toEqual(["Decision", "What I chose", "What I did not choose and why", "Record"]);
   });
 });

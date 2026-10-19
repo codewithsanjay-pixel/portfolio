@@ -22,9 +22,9 @@ function proofTiles() {
 export default function Home() {
   const tiles = proofTiles();
   return (
-    <>
+    <div className="home">
       <section className="hero wrap" aria-labelledby="hero-title">
-        <div>
+        <div className="hero-main">
           <p className="eyebrow">{person.eyebrow}</p>
           <h1 id="hero-title">{person.headline}</h1>
           <p className="lede">{person.subline}</p>
@@ -75,7 +75,10 @@ export default function Home() {
       </Section>
 
       <Section id="skills" title="Skills" band>
-        <SkillsExplorer groups={skillGroups} />
+        <details className="disclosure skills-disclosure">
+          <summary>Show skills by area</summary>
+          <SkillsExplorer groups={skillGroups} />
+        </details>
       </Section>
 
       <Section id="projects" title="Projects">
@@ -116,6 +119,6 @@ export default function Home() {
           </li>
         </ul>
       </Section>
-    </>
+    </div>
   );
 }

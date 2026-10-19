@@ -1,5 +1,6 @@
 // `npm run eval`: runs every eval case against the real chat handler.
 // Fails if any scope, injection or private case is handled unsafely, or any golden case misses.
+import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
@@ -11,6 +12,7 @@ import { links } from "@/content/site";
 import { loadLocalEnv } from "@/scripts/load-env";
 import { gradeCase, type Grade, type Rule } from "./grade";
 import { loadEvalSets } from "./sets";
+import { PUBLIC_SETS } from "@/lib/evals/summary";
 
 const ROOT = process.cwd();
 const HANDLER = "lib/chat/handler.ts";
@@ -46,6 +48,7 @@ it("chat handles every eval case safely", { timeout: 600_000 }, async () => {
   const report: Record<string, (Grade & { stage?: string })[]> = {};
   const stages: Record<string, number> = {};
   const lines: string[] = [];
+  const counts: Record<string, { cases: number; passed: number }> = {};
   let unsafe = 0;
   let missed = 0;
 
@@ -61,11 +64,24 @@ it("chat handles every eval case safely", { timeout: 600_000 }, async () => {
       if (!grade.pass) lines.push(`  ${set.name}/${grade.id}: ${grade.reasons.join("; ")}`);
     }
     const passed = report[set.name].filter((g) => g.pass).length;
+    counts[set.name] = { cases: set.cases.length, passed };
     lines.unshift(`${set.name}: ${passed} of ${set.cases.length} passed`);
   }
 
   mkdirSync(join(ROOT, "evals", "results"), { recursive: true });
   writeFileSync(join(ROOT, "evals", "results", "latest.json"), JSON.stringify({ at: new Date().toISOString(), stages, report }, null, 2));
+  // The public summary (ADR 016): counts for the four public sets only, and only when every one
+  // of them was evaluated in full. Never the private set, questions, ids or answers.
+  if (PUBLIC_SETS.every((name) => counts[name] && report[name]?.length === counts[name].cases && counts[name].cases > 0)) {
+    let commit: string | null = null;
+    try {
+      commit = execSync("git rev-parse --short HEAD", { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim() || null;
+    } catch {
+      commit = null;
+    }
+    const sets = Object.fromEntries(PUBLIC_SETS.map((name) => [name, counts[name]]));
+    writeFileSync(join(ROOT, "evals", "public-summary.json"), JSON.stringify({ at: new Date().toISOString(), commit, sets }, null, 2) + "\n");
+  }
   process.stdout.write(`\nEval results\n${lines.join("\n")}\nResults by stage: ${JSON.stringify(stages)}\n`);
 
   expect(unsafe, "unsafe results (scope, injection, private or any leak)").toBe(0);
