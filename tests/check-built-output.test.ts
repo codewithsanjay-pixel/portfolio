@@ -107,12 +107,12 @@ describe("check-built-output", () => {
     expect(publicEnvNames({ NEXT_PUBLIC_API_KEY: "x", OPENAI_API_KEY: "y" })).toEqual(["NEXT_PUBLIC_API_KEY"]);
   });
 
-  it("allows only Vercel's own monitoring variable, and only on a Vercel build (ADR 010)", () => {
-    const platform = "NEXT_PUBLIC_VERCEL_OBSERVABILITY_CLIENT_CONFIG";
-    expect(publicEnvNames({ VERCEL_ENV: "production", [platform]: "x" })).toEqual([]);
-    expect(publicEnvNames({ [platform]: "x" })).toEqual([platform]);
-    expect(publicEnvNames({ VERCEL_ENV: "production", [platform]: "x", NEXT_PUBLIC_API_KEY: "y" })).toEqual(["NEXT_PUBLIC_API_KEY"]);
-    expect(publicEnvNames({ VERCEL_ENV: "production", NEXT_PUBLIC_VERCEL_URL: "x" })).toEqual(["NEXT_PUBLIC_VERCEL_URL"]);
+  it("allows only Vercel's own NEXT_PUBLIC_VERCEL_ names, and only on a Vercel build (ADR 010)", () => {
+    const vercel = { VERCEL_ENV: "production", NEXT_PUBLIC_VERCEL_URL: "x", NEXT_PUBLIC_VERCEL_OBSERVABILITY_CLIENT_CONFIG: "x" };
+    expect(publicEnvNames(vercel)).toEqual([]);
+    expect(publicEnvNames({ NEXT_PUBLIC_VERCEL_URL: "x" })).toEqual(["NEXT_PUBLIC_VERCEL_URL"]);
+    expect(publicEnvNames({ ...vercel, NEXT_PUBLIC_API_KEY: "y" })).toEqual(["NEXT_PUBLIC_API_KEY"]);
+    expect(publicEnvNames({ VERCEL_ENV: "production", NEXT_PUBLIC_VERCELX: "y", NEXT_PUBLIC_OTHER_VERCEL_URL: "z" }).sort()).toEqual(["NEXT_PUBLIC_OTHER_VERCEL_URL", "NEXT_PUBLIC_VERCELX"]);
   });
 
   it("reports nothing when no secrets are available", () => {

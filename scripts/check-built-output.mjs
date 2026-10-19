@@ -64,14 +64,14 @@ export function missingRequiredSecrets(env) {
   return REQUIRED_ON_VERCEL.filter((name) => !env[name]?.trim());
 }
 
-// Names Vercel adds on its own builds. They are platform settings, not mine (ADR 010).
-// Only this exact name is allowed, and only on a Vercel build.
-export const VERCEL_PLATFORM_PUBLIC = ["NEXT_PUBLIC_VERCEL_OBSERVABILITY_CLIENT_CONFIG"];
+// Names Vercel adds on its own builds (system environment variables). They are platform
+// settings, not mine (ADR 010). Only names with this prefix are allowed, and only on a Vercel build.
+export const VERCEL_PLATFORM_PREFIX = "NEXT_PUBLIC_VERCEL_";
 
 /** @param {Record<string, string | undefined>} env */
 export function publicEnvNames(env) {
-  const allowed = env.VERCEL_ENV ? VERCEL_PLATFORM_PUBLIC : [];
-  return Object.keys(env).filter((name) => name.startsWith("NEXT_PUBLIC_") && !allowed.includes(name));
+  const onVercel = Boolean(env.VERCEL_ENV);
+  return Object.keys(env).filter((name) => name.startsWith("NEXT_PUBLIC_") && !(onVercel && name.startsWith(VERCEL_PLATFORM_PREFIX)));
 }
 
 const BINARY = /\.(png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|wasm|br|gz|zip)$/i;
