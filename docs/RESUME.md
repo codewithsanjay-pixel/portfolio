@@ -97,6 +97,23 @@ An item that also carries [CONFIRM] is not published until I confirm it, whateve
 ### Enterprise Knowledge Assistant stack
 - [PUBLIC-GENERAL] The backend was Python with FastAPI. The vector store was PostgreSQL with pgvector, inside the PostgreSQL we already ran, so there was no separate vector database to operate. (Confirmed by me 2026-10-09.)
 
+### Enterprise Knowledge Assistant design decisions
+- [PUBLIC-GENERAL] Chunking: I started with fixed-size chunks, which sometimes split a clause in the middle of a sentence. I moved to splitting on document structure, headings and paragraph breaks, with size limits to keep chunks manageable. Results on my test set improved. (Confirmed by me 2026-10-19.)
+- [PUBLIC-GENERAL] Embedding model: I chose it by comparing candidates on a sample of real queries from the system, not by benchmark scores. What decided it was how well each model handled the vocabulary in the documents. (Confirmed by me 2026-10-19. Model names stay out of public text.)
+- [PUBLIC-GENERAL] Too much context: retrieving too many passages diluted the context. I fixed it by keeping fewer passages after re-ranking. (Confirmed by me 2026-10-19.)
+- [PUBLIC-GENERAL] Vocabulary gap: employees asked questions informally, while the policy documents were written formally. I fixed it by expanding the query before embedding it. (Confirmed by me 2026-10-19.)
+- [PUBLIC-GENERAL] Access control: I enforced access in each tool, not in the prompt. Before a query ran, the tool worked out who the caller was from their single sign-on token and limited what it could return. The model never received data the caller was not allowed to see. This was part of the design from the start, not added later. (Confirmed by me 2026-10-19.)
+
+### Enterprise Knowledge Assistant outcomes
+- [PUBLIC-GENERAL] Adoption: the business team chose to expand the assistant from one document set to several because they trusted it, not because it was required. (Confirmed by me 2026-10-19.)
+- [PUBLIC-GENERAL] Answer quality: the retrieval and evaluation work reduced wrong answers until they stopped being a standing issue the business team raised in reviews. No figures are published. (Confirmed by me 2026-10-19.)
+- [PUBLIC-GENERAL] Time saved: employees found answers through the assistant instead of searching shared drives or asking colleagues. I did not run a formal time study. The feedback from the operations team was consistent on this. (Confirmed by me 2026-10-19.)
+- [PUBLIC-GENERAL] Reuse: other internal AI tools used the same MCP server instead of building their own integrations to the same systems. That was one of the reasons I designed the MCP layer as a shared piece. (Confirmed by me 2026-10-19.)
+
+### Cloud (American Airlines)
+- [PUBLIC-GENERAL] The AI integrations ran on AWS. I used Lambda for serverless functions and S3 for the documents that fed the retrieval pipeline, and the deployment ran on EC2. I also used Azure OpenAI Service for language model integration. (Confirmed by me 2026-10-19.)
+- [PUBLIC-GENERAL] Platform engineering owned the AWS environment. My work used these services at the application layer: I configured how the AI services connected to and used them. I did not provision or manage the underlying infrastructure. (Confirmed by me 2026-10-19.)
+
 ### Enterprise Knowledge Assistant rollout
 - [PUBLIC-GENERAL] The assistant grew from one document set to several over the following months after the initial rollout, as the business team's trust grew. (Wording chosen by me 2026-10-09.)
 

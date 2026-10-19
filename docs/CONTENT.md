@@ -117,7 +117,19 @@ Expanded page sections (each one only restates the lines above in more structure
 4. Answer quality
 5. Stack
 6. What this page leaves out
-[CONFIRM: anything more you can say about this project in general terms. Without it, the page stays as short as the text above.]
+Design decisions (added 2026-10-19, confirmed by me in chat; same wording as the Detail from me entries in RESUME.md, no model names, no numbers):
+- Chunking: I started with fixed-size chunks, which sometimes split a clause in the middle of a sentence. I moved to splitting on headings and paragraph breaks, with size limits to keep chunks manageable. Results on my test set improved.
+- Embedding model: I chose it by comparing candidates on a sample of real queries from the system, not by benchmark scores. What decided it was how well each model handled the vocabulary in the documents.
+- Too much context: Retrieving too many passages diluted the context. I fixed it by keeping fewer passages after re-ranking.
+- Vocabulary gap: Employees asked questions informally, while the policy documents were written formally. I fixed it by expanding each query before embedding it.
+- Access control: Access was enforced in each tool, not in the prompt. Before a query ran, the tool worked out who the caller was from their sign-in token and limited what it could return. The model never received data the caller was not allowed to see. This was part of the design from the start.
+Outcomes (added 2026-10-19, confirmed by me in chat, words only, no figures; section "Outcomes" sits after "Answer quality"):
+- Adoption: The assistant grew from one document set to several over the months after rollout. The business team chose to expand it because they trusted it, not because it was required.
+- Answer quality: The retrieval and evaluation work reduced wrong answers until they stopped being a standing issue the business team raised in reviews. I am not publishing figures.
+- Time saved: Employees found answers through the assistant instead of searching shared drives or asking colleagues. I did not run a formal time study. The feedback from the operations team was consistent on this.
+- Reuse: Other internal AI tools used the same MCP server instead of building their own integrations to the same systems. That was one of the reasons I designed the MCP layer as a shared piece.
+Where it ran (new section after Stack; Stack gains the tag "AWS (Lambda, S3, EC2)"): The integrations ran on AWS. I used Lambda for serverless functions and S3 for the documents that fed retrieval, and the deployment ran on EC2. Platform engineering owned the AWS environment. My work used these services at the application layer: I configured how the AI services connected to and used them. I did not provision or manage the underlying infrastructure.
+The Design decisions section sits between "What I owned" and "Answer quality" and is titled "Design decisions".
 
 ### AI tools for enterprise operations (American Airlines)
 Keep general (confirmed): problem types, my role and technologies only. No system names, data or numbers.

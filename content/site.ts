@@ -180,7 +180,49 @@ export const eka = {
   ],
   owned: "Architecture and implementation, a FastAPI backend and a React frontend for employees and admin monitoring.",
   quality: "I used prompt engineering and evaluation methods to reduce irrelevant or incorrect answers.",
-  stack: ["Python", "FastAPI", "React", "PostgreSQL with pgvector", "MCP"],
+  decisions: [
+    {
+      label: "Chunking",
+      value: "I started with fixed-size chunks, which sometimes split a clause in the middle of a sentence. I moved to splitting on headings and paragraph breaks, with size limits to keep chunks manageable. Results on my test set improved.",
+    },
+    {
+      label: "Embedding model",
+      value: "I chose it by comparing candidates on a sample of real queries from the system, not by benchmark scores. What decided it was how well each model handled the vocabulary in the documents.",
+    },
+    {
+      label: "Too much context",
+      value: "Retrieving too many passages diluted the context. I fixed it by keeping fewer passages after re-ranking.",
+    },
+    {
+      label: "Vocabulary gap",
+      value: "Employees asked questions informally, while the policy documents were written formally. I fixed it by expanding each query before embedding it.",
+    },
+    {
+      label: "Access control",
+      value: "Access was enforced in each tool, not in the prompt. Before a query ran, the tool worked out who the caller was from their sign-in token and limited what it could return. The model never received data the caller was not allowed to see. This was part of the design from the start.",
+    },
+  ],
+  outcomes: [
+    {
+      label: "Adoption",
+      value: "The assistant grew from one document set to several over the months after rollout. The business team chose to expand it because they trusted it, not because it was required.",
+    },
+    {
+      label: "Answer quality",
+      value: "The retrieval and evaluation work reduced wrong answers until they stopped being a standing issue the business team raised in reviews. I am not publishing figures.",
+    },
+    {
+      label: "Time saved",
+      value: "Employees found answers through the assistant instead of searching shared drives or asking colleagues. I did not run a formal time study. The feedback from the operations team was consistent on this.",
+    },
+    {
+      label: "Reuse",
+      value: "Other internal AI tools used the same MCP server instead of building their own integrations to the same systems. That was one of the reasons I designed the MCP layer as a shared piece.",
+    },
+  ],
+  ranOn:
+    "The integrations ran on AWS. I used Lambda for serverless functions and S3 for the documents that fed retrieval, and the deployment ran on EC2. Platform engineering owned the AWS environment. My work used these services at the application layer: I configured how the AI services connected to and used them. I did not provision or manage the underlying infrastructure.",
+  stack: ["Python", "FastAPI", "React", "PostgreSQL with pgvector", "MCP", "AWS (Lambda, S3, EC2)"],
   leavesOut: "This was employer work, so internal names, data, screenshots and numbers stay private.",
 };
 

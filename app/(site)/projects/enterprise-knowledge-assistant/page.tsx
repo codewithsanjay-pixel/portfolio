@@ -25,8 +25,14 @@ export default function EkaPage() {
       <h2>What I owned</h2>
       <p>{eka.owned}</p>
 
+      <h2>Design decisions</h2>
+      <Facts items={eka.decisions} />
+
       <h2>Answer quality</h2>
       <p>{eka.quality}</p>
+
+      <h2>Outcomes</h2>
+      <Facts items={eka.outcomes} />
 
       <h2>Stack</h2>
       <ul className="tags" aria-label="Stack">
@@ -34,6 +40,9 @@ export default function EkaPage() {
           <li key={s}>{s}</li>
         ))}
       </ul>
+
+      <h2>Where it ran</h2>
+      <p>{eka.ranOn}</p>
 
       <h2>What this page leaves out</h2>
       <p>{eka.leavesOut}</p>

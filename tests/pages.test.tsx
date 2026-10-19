@@ -94,7 +94,7 @@ describe("home page", () => {
 describe("project page", () => {
   it("shows every section and stays general", () => {
     const visible = text(pages.eka);
-    for (const heading of ["The problem", "How it fits together", "What I owned", "Answer quality", "Stack", "What this page leaves out"]) {
+    for (const heading of ["The problem", "How it fits together", "What I owned", "Design decisions", "Answer quality", "Outcomes", "Stack", "Where it ran", "What this page leaves out"]) {
       expect(visible).toContain(heading);
     }
     expectClean(pages.eka);
