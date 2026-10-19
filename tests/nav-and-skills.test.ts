@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { nav } from "@/content/site";
 import { exampleLinkEnabled, withExampleLink } from "@/lib/nav";
 import { ALL_GROUPS, filterSkillGroups } from "@/lib/skills";
 
@@ -26,6 +29,24 @@ describe("example nav link", () => {
   it("does not change the original list", () => {
     withExampleLink(links, true);
     expect(links).toHaveLength(1);
+  });
+});
+
+describe("header nav", () => {
+  it("ends with How it's built, Trust and MCP, with no duplicate targets", () => {
+    expect(nav.slice(-3)).toEqual([
+      { href: "/how-its-built", label: "How it's built" },
+      { href: "/trust", label: "Trust" },
+      { href: "/mcp", label: "MCP" },
+    ]);
+    expect(new Set(nav.map((l) => l.href)).size).toBe(nav.length);
+  });
+
+  it("points every home anchor at a section that exists on the home page", () => {
+    const home = readFileSync(join(process.cwd(), "app", "(site)", "page.tsx"), "utf8");
+    for (const link of nav.filter((l) => l.href.startsWith("/#"))) {
+      expect(home, link.href).toContain(`id="${link.href.slice(2)}"`);
+    }
   });
 });
 

@@ -38,6 +38,8 @@ export const nav: readonly NavLink[] = [
   { href: "/#about", label: "About" },
   { href: "/#contact", label: "Contact" },
   { href: "/how-its-built", label: "How it's built" },
+  { href: "/trust", label: "Trust" },
+  { href: "/mcp", label: "MCP" },
 ];
 
 export const focus = [
@@ -252,7 +254,7 @@ export const howItsBuilt: { intro: string; dataNote: string; sections: BuiltSect
     {
       title: "What this site is and what it is not",
       paragraphs: [
-        "This is my portfolio. It has a home page, a page about the Enterprise Knowledge Assistant, this page, and a chat that answers questions about my work. The chat reads only my resume, including its project descriptions.",
+        "This is my portfolio. It has a home page, a page about the Enterprise Knowledge Assistant, this page, a page on trust and limits, a read-only MCP page, and a chat that answers questions about my work. The chat reads only my resume, including its project descriptions.",
         "It is not a general chatbot. There are no accounts, no comments, no content system and no stored conversations.",
       ],
       files: ["docs/SPEC.md", "docs/RESUME.md", "content/site.ts"],
@@ -295,6 +297,7 @@ export const howItsBuilt: { intro: string; dataNote: string; sections: BuiltSect
       ],
       after: [
         "The visitor gets the answer and the names of the sections it came from, never the raw retrieved text.",
+        "Every answer and every refusal also carries a request trace: the result and timing of each step. For an answered question it lists the retrieved section names with similarity scores. A refusal shows which step stopped, with every check after the model counted as one step, and no scores.",
       ],
       files: [
         "app/api/chat/route.ts",
@@ -408,4 +411,101 @@ export const notFound = {
   title: "Page not found",
   body: "There is no page at this address.",
   home: "Back to home",
+};
+
+// Page /trust (ADR 014). Copy is in docs/CONTENT.md. Numbers in {braces} are filled in
+// from the eval table above and the repository when the page renders, never typed here.
+export const trustPage = {
+  title: "Trust and limits",
+  intro:
+    "This page says what the chat assistant is, what keeps it inside that, and what it does not do. Each control points to the file that enforces it, so you can check it.",
+  whatTitle: "What the assistant is",
+  what: [
+    "Read-only. It reads my resume text and returns an answer. Nothing it does changes that text, and it has no tools that act.",
+    "Stateless. Each question is handled on its own. The page sends only the question, and the server keeps no conversation.",
+    "One model call per question, after a search of my resume. There is no loop, no planning and no second agent.",
+    "No memory, by design. It cannot recall an earlier question, and nothing a visitor says changes what it knows.",
+    "Resume only. It answers from my resume and project text, names the sections it used, and gives one fixed refusal for everything else.",
+  ],
+  controlsTitle: "What enforces that, and where",
+  controlsIntro:
+    "A prompt can be talked around, so these limits are in code, in the database and in the build. Each file name opens the code on GitHub.",
+  controlsColumns: { control: "Control", does: "What it does", where: "Where it lives" },
+  controls: [
+    {
+      control: "Read-only database role",
+      does: "The chat connects as a database role that can only read the chunks table, so even a tricked model cannot change or delete anything.",
+      files: ["docs/DB.md", "lib/db.ts"],
+    },
+    {
+      control: "Corpus allow-list",
+      does: "Only my resume file can be loaded into the corpus. A retrieved row is dropped unless its id and content hash match the current resume text.",
+      files: ["lib/corpus/sources.ts", "lib/retrieve.ts"],
+    },
+    {
+      control: "Server-side citation check",
+      does: "The server checks that every source the model cites was one of the passages retrieved for this question. If not, the answer is replaced by the refusal.",
+      files: ["lib/chat/answer.ts"],
+    },
+    {
+      control: "Output guards",
+      does: "An answer is blocked if it links anywhere except my own profiles, contains private words, or adds numbers or capitalized names that the cited text does not contain.",
+      files: ["lib/chat/answer.ts", "lib/chat/handler.ts", "lib/safety/forbidden.mjs"],
+    },
+    {
+      control: "Rate limits",
+      does: "A limit per visitor per minute and per day, and a daily limit for the whole site. If the limiter cannot be reached, the chat does not run.",
+      files: ["lib/ratelimit.ts", "app/api/chat/route.ts"],
+    },
+    {
+      control: "Content-Security-Policy nonce",
+      does: "Every page request gets a new nonce and a policy that does not allow inline scripts without it.",
+      files: ["proxy.ts", "lib/security/csp.mjs"],
+    },
+    {
+      control: "Build-time secret scan",
+      does: "After each build, the output is searched for the values of the server-side secrets and for wording that must not ship. The build fails if any is found.",
+      files: ["scripts/check-built-output.mjs"],
+    },
+  ],
+  notTitle: "What it does not do",
+  not: [
+    "It does not write. The database role it uses can only read. Per request, the site writes only rate-limit counters keyed by a hash of the visitor's address, and a log line with the event, counts and timing.",
+    "It has no tools that act. The model returns text and a list of source ids. It cannot browse, run code or send anything.",
+    "It has no memory. The app does not store questions, so earlier ones cannot affect later answers. By default the server logs no question text.",
+    "It does not use several agents or hand work between models.",
+    "This page lists no planned features. It describes only what is in the code now.",
+  ],
+  evalsTitle: "What the evals cover",
+  evalsSummary: "{caption}: {passed} of {total} cases passed, in {sets} sets.",
+  evalsSet: "{set}, {cases} cases. {tests}",
+  evalsMore: "The full table and the files behind it are on the How it's built page. The injection set is the one you can try below.",
+  breakIt: {
+    title: "Try to break it",
+    intro:
+      "These are the questions from the public injection eval set. Each one tries to make the chat reveal its instructions, change its rules or show text it should not. The eval expects every one to be refused. Click a question to send it to the live chat and see what happens.",
+    limitNote:
+      "These questions use the same limits as the chat: a small number per minute and per day for each visitor, and a daily limit for the whole site. Running them uses up your share. If a limit is reached you will see an error message instead of a result.",
+    hiddenNote:
+      "Showing {shown} of the {total} questions in the public injection set. The rest use wording this site never prints. The eval run still includes them.",
+    storeNote: "This panel stores nothing. It sends only the question text, one at a time.",
+    listLabel: "Injection questions",
+    expectedLabel: "Expected",
+    expected: { refuse: "refuse", answer: "answer" },
+    actualLabel: "Actual",
+    actual: { refused: "refused", answered: "answered", error: "no result" },
+    matches: "Matches the eval.",
+    differs: "Does not match the eval.",
+    send: "Send",
+    sending: "Sending...",
+  },
+};
+
+// The hero strip. Values are computed when the page renders (app/(site)/page.tsx).
+export const proofStrip = {
+  label: "Checkable facts about this site",
+  evals: "eval cases ({passed} passed in the last full run)",
+  deps: "runtime dependencies",
+  csp: "Strict CSP, nonce per request",
+  cspLabel: "Content-Security-Policy",
 };

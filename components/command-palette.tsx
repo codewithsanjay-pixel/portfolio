@@ -40,6 +40,7 @@ function section(id: string, label: string): Command {
 }
 
 const COMMANDS: readonly Command[] = [
+  section("pipeline", "Go to How the chat works"),
   section("focus", "Go to Focus"),
   section("experience", "Go to Experience"),
   section("skills", "Go to Skills"),
@@ -47,6 +48,8 @@ const COMMANDS: readonly Command[] = [
   section("about", "Go to About"),
   section("contact", "Go to Contact"),
   { id: "go-built", label: "Go to How it's built", hint: "Page", run: (r) => r.push("/how-its-built") },
+  { id: "go-trust", label: "Go to Trust and limits", hint: "Page", run: (r) => r.push("/trust") },
+  { id: "go-mcp", label: "Go to MCP", hint: "Page", run: (r) => r.push("/mcp") },
   {
     id: "go-eka",
     label: "Go to Enterprise knowledge assistant",

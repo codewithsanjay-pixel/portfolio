@@ -13,7 +13,7 @@ export type RateLimiter = { check(ip: string): Promise<LimitResult> };
 
 type FetchLike = (url: string, init: RequestInit) => Promise<Response>;
 
-export function createRateLimiter(env: Env = process.env, fetchImpl: FetchLike = fetch, now: () => number = Date.now): RateLimiter {
+export function createRateLimiter(env: Env = process.env, fetchImpl: FetchLike = fetch, now: () => number = Date.now, scope = ""): RateLimiter {
   const url = requireEnv("UPSTASH_REDIS_REST_URL", env).replace(/\/+$/, "");
   const token = requireEnv("UPSTASH_REDIS_REST_TOKEN", env);
   // A separate secret is better; the token is the fallback (documented in .env.example).
@@ -53,13 +53,13 @@ export function createRateLimiter(env: Env = process.env, fetchImpl: FetchLike =
       const day = Math.floor(t / 86_400_000);
 
       // 1. Per visitor. Window-specific keys: each counts one window and then expires.
-      const visitor = await increment([`rl:m:${id}:${minute}`, `rl:d:${id}:${day}`], [120, 172_800]);
+      const visitor = await increment([`rl:${scope}m:${id}:${minute}`, `rl:${scope}d:${id}:${day}`], [120, 172_800]);
       if (!visitor) return { ok: false, reason: "unavailable" };
       if (visitor[0] > perMinute) return { ok: false, reason: "minute" };
       if (visitor[1] > perDay) return { ok: false, reason: "day" };
 
       // 2. Global, only for requests that passed the per-visitor limits.
-      const global = await increment([`rl:g:${day}`], [172_800]);
+      const global = await increment([`rl:${scope}g:${day}`], [172_800]);
       if (!global) return { ok: false, reason: "unavailable" };
       if (global[0] > globalPerDay) return { ok: false, reason: "global" };
       return { ok: true };

@@ -4,13 +4,22 @@
 // 3. input check, retrieval, scope check, answer, citation check and output guard
 //    (lib/chat/answer.ts, ADR 008)
 // Errors reveal nothing about internals.
+// With "Accept: text/event-stream" the answer step streams typed events instead
+// (lib/chat/stream.ts, docs/CHAT-EVENTS.md). Steps 1 and 2 run first either way, so
+// every rejection is still the normal JSON error and no stream starts for it.
 import { describeCitations, describeRetrieval, handleChat } from "@/lib/chat/handler";
+import { encodeEvent } from "@/lib/chat/stream";
 import { buildTrace } from "@/lib/chat/trace";
+import type { ChatResult } from "@/lib/chat/types";
 import { logChat } from "@/lib/chat/log";
 import { clientIp, createRateLimiter, type RateLimiter } from "@/lib/ratelimit";
 
+export const maxDuration = 30;
+
 const MAX_QUESTION_CHARS = 500;
 const MAX_BODY_BYTES = 2_048;
+
+// handleChat also takes the step callback (lib/chat/handler.ts passes it to answerQuestion).
 
 const NO_STORE = { "Cache-Control": "no-store" };
 const MESSAGES = {
@@ -75,21 +84,62 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   // 3. Answer.
+  if ((request.headers.get("accept") ?? "").toLowerCase().includes("text/event-stream")) return stream(question, started);
   try {
     const result = await handleChat(question);
-    logChat({ event: result.refused ? "refused" : "answered", ms: Date.now() - started, citations: result.citations.length }, question);
-    return Response.json(
-      {
-        refused: result.refused,
-        answer: result.answer,
-        citations: describeCitations(result.citations),
-        trace: buildTrace(result, describeRetrieval, Date.now() - started),
-      },
-      { headers: NO_STORE },
-    );
+    return Response.json(finalBody(result, question, started), { headers: NO_STORE });
   } catch (err) {
-    // Our own error messages never contain secrets or user text (lib/db.ts, lib/embed.ts, lib/llm.ts).
-    logChat({ event: "error", reason: err instanceof Error ? err.message : "unknown" });
-    return error(500, MESSAGES.error);
+    return failed(err, 500);
   }
+}
+
+function finalBody(result: ChatResult, question: string, started: number) {
+  logChat({ event: result.refused ? "refused" : "answered", ms: Date.now() - started, citations: result.citations.length }, question);
+  return {
+    refused: result.refused,
+    answer: result.answer,
+    citations: describeCitations(result.citations),
+    trace: buildTrace(result, describeRetrieval, Date.now() - started),
+  };
+}
+
+function failed(err: unknown, status: number): Response {
+  // Our own error messages never contain secrets or user text (lib/db.ts, lib/embed.ts, lib/llm.ts).
+  logChat({ event: "error", reason: err instanceof Error ? err.message : "unknown" });
+  return error(status, MESSAGES.error);
+}
+
+// Server-sent events: one "stage" per passed step, then exactly one "final" or "error".
+function stream(question: string, started: number): Response {
+  const encoder = new TextEncoder();
+  const body = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      let open = true;
+      const send = (type: "stage" | "final" | "error", data: Record<string, unknown>) => {
+        if (!open) return;
+        try {
+          controller.enqueue(encoder.encode(encodeEvent(type, data)));
+        } catch {
+          open = false;
+        }
+      };
+      // The rate limit step passed before the stream started.
+      send("stage", { key: "rate" });
+      try {
+        const result = await handleChat(question, (key, ms) => send("stage", { key, ...(ms === undefined ? {} : { ms: Math.max(50, Math.round(ms / 50) * 50) }) }));
+        send("final", finalBody(result, question, started));
+      } catch (err) {
+        logChat({ event: "error", reason: err instanceof Error ? err.message : "unknown" });
+        send("error", { message: MESSAGES.error });
+      }
+      if (open) {
+        open = false;
+        controller.close();
+      }
+    },
+    cancel() {
+      // The visitor left; later sends are no-ops because enqueue throws and is caught.
+    },
+  });
+  return new Response(body, { headers: { "Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-store", "X-Accel-Buffering": "no" } });
 }

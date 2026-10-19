@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import "./globals.css";
 import "./palette.css";
 import "./pipeline.css";
+import "./pages.css";
 
 export const metadata: Metadata = {
   title: "Sanjay Kandimalla",

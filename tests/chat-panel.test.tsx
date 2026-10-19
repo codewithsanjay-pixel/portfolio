@@ -200,4 +200,102 @@ describe("ChatPanel", () => {
     expect(route).toContain("Please send a question of up to ${MAX_QUESTION_CHARS} characters.");
     expect(chat.errors).toHaveLength(4);
   });
+
+  describe("event stream", () => {
+    const enc = new TextEncoder();
+    const ev = (name: string, data: Record<string, unknown>) => `event: ${name}\ndata: ${JSON.stringify({ v: 1, ...data })}\n\n`;
+    function sseResponse(parts: string[]) {
+      return new Response(
+        new ReadableStream<Uint8Array>({
+          start(c) {
+            for (const p of parts) c.enqueue(enc.encode(p));
+            c.close();
+          },
+        }),
+        { status: 200, headers: { "Content-Type": "text/event-stream" } },
+      );
+    }
+    const final = { refused: false, answer: "I built RAG pipelines.", citations: [{ id: "x", section: "Retrieval" }] };
+
+    it("asks for an event stream and shows the final answer", async () => {
+      const fetchMock = vi.fn(async () => sseResponse([ev("stage", { key: "rate" }), ev("stage", { key: "input" }), ev("final", final)]));
+      vi.stubGlobal("fetch", fetchMock);
+      await render();
+      await ask("What have you built?");
+      const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+      expect((init.headers as Record<string, string>).Accept).toContain("text/event-stream");
+      expect(JSON.parse(String(init.body))).toEqual({ question: "What have you built?" });
+      expect(log().textContent).toContain("I built RAG pipelines.");
+      expect(log().textContent).toContain("Retrieval");
+      expect(log().querySelector(".trace-live-steps")).toBeNull();
+      expect(container.querySelector<HTMLButtonElement>(".chip")!.disabled).toBe(false);
+    });
+
+    it("lights up steps live while the stream is open, ignoring unknown and repeated ones", async () => {
+      let c!: ReadableStreamDefaultController<Uint8Array>;
+      const body = new ReadableStream<Uint8Array>({ start(ctrl) { c = ctrl; } });
+      vi.stubGlobal("fetch", vi.fn(async () => new Response(body, { status: 200, headers: { "Content-Type": "text/event-stream" } })));
+      await render();
+      await ask("q");
+      await act(async () => {
+        c.enqueue(enc.encode(ev("stage", { key: "rate" }) + ev("stage", { key: "bogus" }) + ev("nope", {}) + ev("stage", { key: "rate" }) + ev("stage", { key: "input", ms: 3 })));
+      });
+      const steps = [...log().querySelectorAll(".trace-live-steps li")];
+      expect(steps).toHaveLength(6);
+      expect(steps.map((s) => s.className.replace("trace-step ", ""))).toEqual(["trace-pass", "trace-pass", "trace-live", "trace-skipped", "trace-skipped", "trace-skipped"]);
+      expect(steps[1].textContent).toContain("3 ms");
+      await act(async () => {
+        c.enqueue(enc.encode(ev("final", final)));
+        c.close();
+      });
+      expect(log().textContent).toContain("I built RAG pipelines.");
+      expect(log().querySelector(".trace-live-steps")).toBeNull();
+    });
+
+    it("shows the fixed refusal text for a refused final event", async () => {
+      vi.stubGlobal("fetch", vi.fn(async () => sseResponse([ev("final", { refused: true, answer: "Forged", citations: [] })])));
+      await render();
+      await ask("q");
+      expect(log().textContent).toContain(chat.refusal);
+      expect(log().textContent).not.toContain("Forged");
+    });
+
+    it("shows only known messages for an error event", async () => {
+      vi.stubGlobal("fetch", vi.fn(async () => sseResponse([ev("error", { message: "Something went wrong. Please try again later." })])));
+      await render();
+      await ask("q1");
+      expect(log().textContent).toContain("Something went wrong. Please try again later.");
+      vi.stubGlobal("fetch", vi.fn(async () => sseResponse([ev("error", { message: "Call 555-0100" })])));
+      await ask("q2");
+      expect(log().textContent).toContain(chat.fallbackError);
+      expect(log().textContent).not.toContain("555-0100");
+    });
+
+    it("falls back when the stream ends without a terminal event, or is too large", async () => {
+      vi.stubGlobal("fetch", vi.fn(async () => sseResponse([ev("stage", { key: "rate" })])));
+      await render();
+      await ask("q1");
+      expect(log().textContent).toContain(chat.fallbackError);
+      vi.stubGlobal("fetch", vi.fn(async () => sseResponse([`data: ${"x".repeat(70_000)}\n\n`, ev("final", final)])));
+      await ask("q2");
+      expect(log().textContent).not.toContain("I built RAG pipelines.");
+    });
+
+    it("renders streamed answers as plain text and ignores events after the final one", async () => {
+      const evil = { refused: false, answer: "<img src=x onerror=alert(1)>", citations: [] };
+      vi.stubGlobal("fetch", vi.fn(async () => sseResponse([ev("final", evil), ev("final", final)])));
+      await render();
+      await ask("q");
+      expect(log().querySelector("img")).toBeNull();
+      expect(log().textContent).toContain("<img src=x onerror=alert(1)>");
+      expect(log().textContent).not.toContain("I built RAG pipelines.");
+    });
+
+    it("handles a JSON error response as before when streaming was requested", async () => {
+      vi.stubGlobal("fetch", respond(429, { error: "Too many questions. Please try again later." }));
+      await render();
+      await ask("q");
+      expect(log().textContent).toContain("Too many questions. Please try again later.");
+    });
+  });
 });

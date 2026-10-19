@@ -215,7 +215,7 @@ Intro: This page describes what is actually in this site's code. Each section en
 Data note (ADR 007): When the chat assistant is live, visitor questions and the resume text retrieved to answer them are sent to OpenAI, which creates the search embeddings and writes the answers.
 
 ### 1. What this site is and what it is not
-This is my portfolio. It has a home page, a page about the Enterprise Knowledge Assistant, this page, and a chat that answers questions about my work. The chat reads only my resume, including its project descriptions.
+This is my portfolio. It has a home page, a page about the Enterprise Knowledge Assistant, this page, a page on trust and limits, a read-only MCP page, and a chat that answers questions about my work. The chat reads only my resume, including its project descriptions.
 
 It is not a general chatbot. There are no accounts, no comments, no content system and no stored conversations.
 
@@ -243,6 +243,8 @@ Every question goes through the same steps, in this order. If a step from the in
 7. Output checks. The answer must not add numbers or capitalized names that the cited text does not contain, must not link anywhere except my own profiles, and must not contain private words.
 
 The visitor gets the answer and the names of the sections it came from, never the raw retrieved text.
+
+Every answer and every refusal also carries a request trace: the result and timing of each step. For an answered question it lists the retrieved section names with similarity scores. A refusal shows which step stopped, with every check after the model counted as one step, and no scores.
 
 Files: app/api/chat/route.ts, lib/chat/answer.ts, lib/chat/prompt.ts, lib/retrieve.ts, lib/ratelimit.ts, docs/adr/008-scope-check-by-retrieval.md
 
@@ -298,3 +300,67 @@ Files: docs/SPEC.md, docs/adr/002-stack.md, package.json, components/skills-expl
 - The chat answers about my work only. It does not know how this site is built. This page is for that.
 
 Files: docs/adr/008-scope-check-by-retrieval.md, lib/chat/answer.ts, evals/README.md
+
+## Navigation (ADR 014)
+Header links, in order: Focus, Experience, Skills, Projects, About, Contact, How it's built, Trust, MCP. Trust goes to /trust. MCP goes to /mcp (copy below). Command palette: "Go to How the chat works", "Go to Trust and limits" and "Go to MCP".
+
+## Hero facts strip (ADR 014)
+Three small tiles under the GitHub and LinkedIn buttons. The numbers are computed when the page renders: the eval case total from the table on the How it's built page, and the runtime dependency count from package.json. Nothing is typed in.
+Group label (for screen readers): Checkable facts about this site
+- Tile 1, links to /how-its-built: "{total}", then: eval cases ({passed} passed in the last full run)
+- Tile 2, links to package.json on GitHub: "{count}", then: runtime dependencies
+- Tile 3, links to /trust: Strict CSP, nonce per request, then: Content-Security-Policy
+
+## Trust and limits (own page, /trust, ADR 014)
+Every statement is backed by a file in the repository. Numbers in {braces} are computed when the page renders: from the eval table above, and from the public injection eval file. File lists in the controls table are checked by a test (each file exists and is tracked by git).
+
+Title: Trust and limits
+Intro: This page says what the chat assistant is, what keeps it inside that, and what it does not do. Each control points to the file that enforces it, so you can check it.
+
+### 1. What the assistant is
+- Read-only. It reads my resume text and returns an answer. Nothing it does changes that text, and it has no tools that act.
+- Stateless. Each question is handled on its own. The page sends only the question, and the server keeps no conversation.
+- One model call per question, after a search of my resume. There is no loop, no planning and no second agent.
+- No memory, by design. It cannot recall an earlier question, and nothing a visitor says changes what it knows.
+- Resume only. It answers from my resume and project text, names the sections it used, and gives one fixed refusal for everything else.
+
+### 2. What enforces that, and where
+Intro: A prompt can be talked around, so these limits are in code, in the database and in the build. Each file name opens the code on GitHub.
+Table columns: Control, What it does, Where it lives
+- Read-only database role: The chat connects as a database role that can only read the chunks table, so even a tricked model cannot change or delete anything. Files: docs/DB.md, db/schema.sql, lib/db.ts
+- Corpus allow-list: Only my resume file can be loaded into the corpus. A retrieved row is dropped unless its id and content hash match the current resume text. Files: lib/corpus/sources.ts, lib/retrieve.ts
+- Server-side citation check: The server checks that every source the model cites was one of the passages retrieved for this question. If not, the answer is replaced by the refusal. Files: lib/chat/answer.ts
+- Output guards: An answer is blocked if it links anywhere except my own profiles, contains private words, or adds numbers or capitalized names that the cited text does not contain. Files: lib/chat/answer.ts, lib/safety/forbidden.mjs
+- Rate limits: A limit per visitor per minute and per day, and a daily limit for the whole site. If the limiter cannot be reached, the chat does not run. Files: lib/ratelimit.ts, app/api/chat/route.ts
+- Content-Security-Policy nonce: Every page request gets a new nonce and a policy that does not allow inline scripts without it. Files: proxy.ts, lib/security/csp.mjs
+- Build-time secret scan: After each build, the output is searched for the values of the server-side secrets and for wording that must not ship. The build fails if any is found. Files: scripts/check-built-output.mjs
+
+### 3. What it does not do
+- It does not write. The database role it uses can only read. Per request, the site writes only rate-limit counters keyed by a hash of the visitor's address, and a log line with the event, counts and timing.
+- It has no tools that act. The model returns text and a list of source ids. It cannot browse, run code or send anything.
+- It has no memory. The app does not store questions, so earlier ones cannot affect later answers. By default the server logs no question text.
+- It does not use several agents or hand work between models.
+- This page lists no planned features. It describes only what is in the code now.
+
+### 4. What the evals cover
+Counts come from the table on the How it's built page, never typed here.
+Summary: {caption}: {passed} of {total} cases passed, in {sets} sets.
+Each set: {set}, {cases} cases. {tests}
+Closing note (the sentence in the table note on How it's built is repeated here): The sets are small and I wrote them. A pass means the cases I thought of pass, not that nothing can go wrong.
+Link line: The full table and the files behind it are on the How it's built page. The injection set is the one you can try below.
+
+### 5. Try to break it
+Title: Try to break it
+Intro: These are the questions from the public injection eval set. Each one tries to make the chat reveal its instructions, change its rules or show text it should not. The eval expects every one to be refused. Click a question to send it to the live chat and see what happens.
+Limit note: These questions use the same limits as the chat: a small number per minute and per day for each visitor, and a daily limit for the whole site. Running them uses up your share. If a limit is reached you will see an error message instead of a result.
+Left-out note (only if a question is left out): Showing {shown} of the {total} questions in the public injection set. The rest use wording this site never prints. The eval run still includes them.
+Store note: This panel stores nothing. It sends only the question text, one at a time.
+Labels: Injection questions. Expected. refuse. answer. Actual. refused. answered. no result. Matches the eval. Does not match the eval. Send. Sending...
+
+
+
+## Read-only MCP server (own page, /mcp, ADR 013)
+
+Title: Read-only MCP server
+
+The page copy lives in `app/(site)/mcp/page.tsx` and is built from the tool contracts in `lib/mcp/contracts.ts`, so the wording of each tool is the tool's own description. It says what the endpoint is (JSON-RPC 2.0 over HTTP POST, three read-only tools), how to connect (endpoint, protocol version, two curl examples), the three tool contracts (inputs and outputs as tables), and what it does not do (no writes, no sessions, no memory, no private notes, same rate-limit service as the chat with its own counters). It names no person and makes no claim about my work history.

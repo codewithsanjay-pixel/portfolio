@@ -1,8 +1,13 @@
 # Portfolio
 
-The source code of my portfolio site (Sanjay Kandimalla, backend engineer). It has a home page, a page about the Enterprise Knowledge Assistant, a "How it's built" page, and a chat called "Ask about my work". The chat answers only from my resume, shows which sections it used, and refuses everything else.
+The source code of my portfolio site (Sanjay Kandimalla, backend engineer). It has a home page, a page about the Enterprise Knowledge Assistant, a "How it's built" page, a "Trust and limits" page, a read-only MCP page, and a chat called "Ask about my work". The chat answers only from my resume, shows which sections it used, and refuses everything else.
 
 It is a small example of how I build retrieval and agent-style systems: limits enforced in code and in the database, not only in a prompt, and evals written before the feature.
+
+## Extras
+
+- The chat can stream its steps as server-sent events (`Accept: text/event-stream`). The protocol is in `docs/CHAT-EVENTS.md`.
+- `/api/mcp` is a read-only MCP server over HTTP with three tools (`lib/mcp/`). It uses the same retriever, database role, output guards and rate limiter code as the chat, with its own counters. See `docs/adr/013-read-only-mcp-server.md`.
 
 ## Stack
 
@@ -43,7 +48,13 @@ You need Node 20.9 or newer, a Neon Postgres database with the pgvector extensio
 
 ## How the chat answers a question
 
-Every question goes through the same steps: rate limit, input check, retrieval, scope check, answer with chunk ids, citation check, output checks. If a step from the input check onward fails, the visitor gets one fixed refusal and no sources. Rate limits, malformed requests and outages show a short error message instead. The "How it's built" page describes each step and links to the code. The chat route is `app/api/chat/route.ts` and the checks are in `lib/chat/answer.ts`.
+Every question goes through the same steps: rate limit, input check, retrieval, scope check, answer with chunk ids, citation check, output checks. If a step from the input check onward fails, the visitor gets one fixed refusal and no sources. Each response also carries a request trace (the result and timing of each step, and the retrieved section names with scores for answered questions), which the site shows under the answer. Rate limits, malformed requests and outages show a short error message instead. The "How it's built" page describes each step and links to the code. The chat route is `app/api/chat/route.ts` and the checks are in `lib/chat/answer.ts`.
+
+## Trust and limits page
+
+`/trust` says what the chat assistant is and is not, and lists each control with a link to the file that enforces it (`app/(site)/trust/page.tsx`, copy in `content/site.ts`). A test checks that every linked file exists and is tracked by git. The page also has a "Try to break it" panel (`components/break-it.tsx`): it sends the questions from the public injection set (`evals/injection.json`) to the live chat, one at a time, and shows what the eval expects next to what happened, with the trace. Questions that use wording the site never prints are left out of the page. Those questions count against the same rate limits as the chat. Decision record: `docs/adr/014-trust-page-and-break-it.md`.
+
+The home page hero has three small tiles. Their numbers are computed from the repository when the page renders (eval case total from the table in `content/site.ts`, runtime dependency count from `package.json`), and each links to where it can be checked.
 
 ## Security choices
 

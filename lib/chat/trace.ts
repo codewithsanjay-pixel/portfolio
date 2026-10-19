@@ -16,7 +16,11 @@ export type PublicTrace = {
   totalMs: number;
 };
 
-const ORDER: StepKey[] = ["rate", "input", "retrieve", "scope", "model", "checks"];
+export const STEP_ORDER: readonly StepKey[] = ["rate", "input", "retrieve", "scope", "model", "checks"];
+const ORDER = STEP_ORDER;
+
+// Called when a step passes (never when one stops the flow), with its time if it has one.
+export type StepCallback = (key: StepKey, ms?: number) => void;
 
 // The step where the flow stopped, or null if every step passed.
 function stoppedAt(stage: ChatStage | undefined): StepKey | null {

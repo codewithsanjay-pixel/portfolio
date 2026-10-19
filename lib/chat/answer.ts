@@ -5,6 +5,7 @@ import { normalize } from "../safety/normalize.mjs";
 import type { AnswerModel } from "../llm";
 import type { RetrievedChunk } from "../retrieve";
 import { SYSTEM_PROMPT } from "./prompt";
+import type { StepCallback, StepKey } from "./trace";
 import { REFUSAL_MESSAGE, SYSTEM_PROMPT_CANARY, type ChatResult, type ChatStage, type ChatTrace } from "./types";
 
 export type ChatDeps = {
@@ -16,6 +17,9 @@ export type ChatDeps = {
   allowedUrls: readonly string[];
   // Private words that must never appear in an answer (from the PRIVATE_TERMS env var).
   privateTerms?: readonly string[];
+  // The prompt sent to the model. A dependency so tests can run the flow with no
+  // prompt at all: the checks below must hold whatever the prompt says (ADR 012).
+  systemPrompt?: string;
 };
 
 export function refusal(retrieved: readonly string[] = [], stage: ChatStage = "model"): ChatResult {
@@ -240,16 +244,26 @@ export function scriptsTheAnswer(question: string): boolean {
 
 // ------------------------------------------------------------------- the flow
 
-export async function answerQuestion(question: string, deps: ChatDeps): Promise<ChatResult> {
+export async function answerQuestion(question: string, deps: ChatDeps, onStep?: StepCallback): Promise<ChatResult> {
   const trace: ChatTrace = { retrieved: [], retrieveMs: 0, modelMs: 0 };
-  const result = await runFlow(question, deps, trace);
+  // Called only when a step passes, so a stream never says which check failed.
+  // A failing callback (for example a closed connection) must not change the answer.
+  const step = (key: StepKey, ms?: number) => {
+    try {
+      onStep?.(key, ms);
+    } catch {
+      /* ignore */
+    }
+  };
+  const result = await runFlow(question, deps, trace, step);
   return { ...result, trace };
 }
 
-async function runFlow(question: string, deps: ChatDeps, trace: ChatTrace): Promise<ChatResult> {
+async function runFlow(question: string, deps: ChatDeps, trace: ChatTrace, step: StepCallback): Promise<ChatResult> {
   // Input check (ADR 008), before any spend: hidden or lookalike characters, and
   // questions that script the answer.
   if (hasUnexpectedCharacters(question, "\n\r\t") || scriptsTheAnswer(question)) return refusal([], "input");
+  step("input");
 
   // Steps 2 and 3: retrieve, and refuse if nothing in the corpus is close enough.
   const t0 = Date.now();
@@ -257,17 +271,20 @@ async function runFlow(question: string, deps: ChatDeps, trace: ChatTrace): Prom
   trace.retrieveMs = Date.now() - t0;
   trace.retrieved = chunks.map((c) => ({ id: c.id, score: Math.round(c.score * 10) / 10 }));
   const retrieved = chunks.map((c) => c.id);
+  step("retrieve", trace.retrieveMs);
   if (chunks.length === 0 || chunks[0].score < deps.minScore) return refusal(retrieved, "scope");
+  step("scope");
 
   // Step 4: answer from the retrieved chunks only.
   const t1 = Date.now();
   const out = await deps.model.answer({
-    system: SYSTEM_PROMPT,
+    system: deps.systemPrompt ?? SYSTEM_PROMPT,
     question,
     sources: chunks.map(({ id, context, text }) => ({ id, context, text })),
   });
   trace.modelMs = Date.now() - t1;
   if (out.refused) return refusal(retrieved, "model");
+  step("model", trace.modelMs);
 
   // Step 5: verify citations on the server.
   const citations = [...new Set(out.citations)];
@@ -280,6 +297,7 @@ async function runFlow(question: string, deps: ChatDeps, trace: ChatTrace): Prom
   const cited = chunks.filter((c) => citations.includes(c.id));
   if (ungroundedNumber(answer, cited) || unsourcedName(answer, cited)) return refusal(retrieved, "grounding");
 
-  // Step 6.
+  // Step 6. The post-model checks are one step, reported only if all of them passed.
+  step("checks");
   return { refused: false, answer, citations, retrieved, stage: "answered" };
 }

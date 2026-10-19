@@ -100,6 +100,7 @@ describe("CommandPalette", () => {
     openPalette();
     press(input(), "ArrowDown");
     press(input(), "ArrowDown");
+    press(input(), "ArrowDown");
     press(input(), "Enter");
     expect(push).toHaveBeenCalledWith("/#skills");
     expect(dialog().open).toBe(false);
@@ -125,6 +126,18 @@ describe("CommandPalette", () => {
     type("built");
     press(input(), "Enter");
     expect(push).toHaveBeenCalledWith("/how-its-built");
+  });
+
+  it("navigates to the trust and MCP pages", () => {
+    render();
+    openPalette();
+    type("trust");
+    press(input(), "Enter");
+    expect(push).toHaveBeenCalledWith("/trust");
+    openPalette();
+    type("mcp");
+    press(input(), "Enter");
+    expect(push).toHaveBeenCalledWith("/mcp");
   });
 
   it("toggles the theme and saves it under the same key as the toggle button", () => {

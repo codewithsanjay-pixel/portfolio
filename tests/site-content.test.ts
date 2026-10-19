@@ -7,12 +7,40 @@ import * as site from "@/content/site";
 
 const CONTENT = readFileSync(join(process.cwd(), "docs", "CONTENT.md"), "utf8");
 
+// Every string on the trust page (ADR 014) except the file lists, which a test checks against git.
+function trustCopy(): string[] {
+  const t = site.trustPage;
+  return [
+    t.title,
+    t.intro,
+    t.whatTitle,
+    ...t.what,
+    t.controlsTitle,
+    t.controlsIntro,
+    ...Object.values(t.controlsColumns),
+    ...t.controls.flatMap((c) => [c.control, c.does]),
+    t.notTitle,
+    ...t.not,
+    t.evalsTitle,
+    t.evalsSummary,
+    t.evalsSet,
+    t.evalsMore,
+    ...Object.values(t.breakIt).flatMap((v) => (typeof v === "string" ? [v] : Object.values(v))),
+  ];
+}
+
 describe("content/site.ts", () => {
   it("has no markers or ruled-out wording", () => {
     const all = JSON.stringify(site);
     for (const { pattern, why } of FORBIDDEN) {
       expect(pattern.test(all), why).toBe(false);
     }
+  });
+
+  it("lists the new header links and palette commands in CONTENT.md", () => {
+    expect(site.nav.map((l) => l.label).slice(-3)).toEqual(["How it's built", "Trust", "MCP"]);
+    expect(CONTENT).toContain("Header links, in order: " + site.nav.map((l) => l.label).join(", "));
+    expect(CONTENT).toContain('"Go to Trust and limits" and "Go to MCP"');
   });
 
   it("uses CONTENT.md copy word for word", () => {
@@ -37,6 +65,8 @@ describe("content/site.ts", () => {
       site.howItsBuilt.dataNote,
       ...site.howItsBuilt.sections.flatMap((s) => [s.title, ...s.paragraphs, ...(s.points ?? []), ...(s.after ?? []), ...(s.table ? [s.table.note, ...s.table.rows.map((r) => r.tests)] : [])]),
       ...site.chat.starters,
+      ...trustCopy(),
+      ...Object.values(site.proofStrip),
     ];
     const missing = copy.filter((line) => !CONTENT.includes(line));
     expect(missing).toEqual([]);

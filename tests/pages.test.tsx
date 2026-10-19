@@ -8,8 +8,10 @@ import SiteLayout from "@/app/(site)/layout";
 import Home from "@/app/(site)/page";
 import EkaPage from "@/app/(site)/projects/enterprise-knowledge-assistant/page";
 import HowItsBuilt from "@/app/(site)/how-its-built/page";
+import TrustPage from "@/app/(site)/trust/page";
+import pkg from "@/package.json";
 import { FORBIDDEN } from "@/scripts/check-built-output.mjs";
-import { eka, focus, links, person, timeline } from "@/content/site";
+import { eka, focus, howItsBuilt, links, person, proofStrip, timeline } from "@/content/site";
 
 const EXAMPLE_MARKERS = ["Alex Sample", "Example Airline", "Example Payments"];
 
@@ -31,6 +33,7 @@ const pages = {
   home: renderToStaticMarkup(<Home />),
   eka: renderToStaticMarkup(<EkaPage />),
   howItsBuilt: renderToStaticMarkup(<HowItsBuilt />),
+  trust: renderToStaticMarkup(<TrustPage />),
 };
 
 describe("home page", () => {
@@ -45,6 +48,19 @@ describe("home page", () => {
   it("has sections in the spec order", () => {
     const ids = [...pages.home.matchAll(/<section id="([^"]+)"/g)].map((m) => m[1]);
     expect(ids).toEqual(["pipeline", "focus", "experience", "skills", "projects", "about", "contact"]);
+  });
+
+  it("shows three derived fact tiles under the link buttons, each linking to where it can be checked", () => {
+    const rows = howItsBuilt.sections.find((x) => x.table)!.table!.rows;
+    const total = rows.reduce((n, r) => n + r.cases, 0);
+    const passed = rows.reduce((n, r) => n + r.passed, 0);
+    const tiles = [...pages.home.matchAll(/<a class="fact-tile" href="([^"]+)">(.*?)<\/a>/g)].map((m) => ({ href: m[1], text: text(m[2]).trim() }));
+    expect(tiles).toEqual([
+      { href: "/how-its-built", text: `${total} ${proofStrip.evals.replace("{passed}", String(passed))}` },
+      { href: expect.stringMatching(/\/blob\/main\/package\.json$/), text: `${Object.keys(pkg.dependencies).length} ${proofStrip.deps}` },
+      { href: "/trust", text: `${proofStrip.csp} ${proofStrip.cspLabel}` },
+    ]);
+    expect(pages.home.indexOf("facts-strip")).toBeGreaterThan(pages.home.indexOf("LinkedIn"));
   });
 
   it("puts role detail inside expandable details", () => {
@@ -87,11 +103,30 @@ describe("how it's built page", () => {
   });
 });
 
+describe("trust page", () => {
+  it("has its five sections in order and is clean", () => {
+    const visible = text(pages.trust);
+    const headings = [...pages.trust.matchAll(/<h2 id="[^"]+">([^<]+)<\/h2>/g)].map((m) => m[1]);
+    expect(headings).toEqual(["What the assistant is", "What enforces that, and where", "What it does not do", "What the evals cover", "Try to break it"]);
+    expect(visible).toContain("Trust and limits");
+    expectClean(pages.trust);
+  });
+
+  it("takes eval counts from the how-it's-built table", () => {
+    const rows = howItsBuilt.sections.find((x) => x.table)!.table!.rows;
+    const total = rows.reduce((n, r) => n + r.cases, 0);
+    const passed = rows.reduce((n, r) => n + r.passed, 0);
+    expect(text(pages.trust)).toContain(`${passed} of ${total} cases passed, in ${rows.length} sets`);
+  });
+});
+
 describe("site layout", () => {
   it("renders header, nav and footer without the example link by default", () => {
     const html = renderToStaticMarkup(<SiteLayout params={Promise.resolve({})}>child</SiteLayout>);
     expect(html).toContain(person.name);
     expect(html).toContain('href="/#experience"');
+    expect(html).toContain('href="/trust"');
+    expect(html).toContain('href="/mcp"');
     expect(html).not.toContain('href="/example"');
     expectClean(html);
   });

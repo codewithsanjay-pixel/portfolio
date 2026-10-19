@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   // No cacheComponents or partialPrefetching: per-request CSP nonces need every
   // page rendered per request (ADR 009).
   // The chat route builds its allowed chunk list from the resume at runtime.
-  outputFileTracingIncludes: { "/api/chat": ["./docs/RESUME.md"] },
+  outputFileTracingIncludes: { "/api/chat": ["./docs/RESUME.md"], "/api/mcp": ["./docs/RESUME.md"], "/trust": ["./evals/injection.json"] },
   // Do not advertise the framework.
   poweredByHeader: false,
   async headers() {

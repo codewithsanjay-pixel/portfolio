@@ -79,3 +79,27 @@ export function TracePanel({ trace }: { trace: Trace }) {
     </details>
   );
 }
+
+// The same six steps while the request is still running, lit up as the server
+// reports each one (the "stage" events in docs/CHAT-EVENTS.md). Only steps that
+// passed are known; the next one is shown as running and the rest as waiting.
+export function LiveTrace({ passed }: { passed: readonly { key: TraceKey; ms?: number }[] }) {
+  const done = new Map(passed.map((p) => [p.key, p.ms]));
+  const next = TRACE_STEPS.find((k) => !done.has(k));
+  return (
+    <ol className="trace-steps trace-live-steps" aria-hidden="true">
+      {TRACE_STEPS.map((key) => {
+        const ms = done.get(key);
+        const state = done.has(key) ? "pass" : key === next ? "live" : "skipped";
+        return (
+          <li key={key} className={`trace-step trace-${state}`}>
+            <span className="trace-dot" />
+            <span className="trace-name">{LABELS[key]}</span>
+            <span className="trace-state">{state === "pass" ? "passed" : state === "live" ? "running" : "waiting"}</span>
+            {ms !== undefined ? <span className="trace-ms">{ms} ms</span> : null}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}

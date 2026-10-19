@@ -13,7 +13,7 @@ vi.mock("@/lib/ratelimit", async (orig) => ({
   },
 }));
 vi.mock("@/lib/chat/handler", () => ({
-  handleChat: (q: string) => handleChat(q),
+  handleChat: (...args: unknown[]) => handleChat(...args),
   describeCitations: (ids: string[]) => ids.map((id) => ({ id, section: "Experience" })),
   describeRetrieval: (items: { id: string; score: number }[], cited: string[]) =>
     items.map((x) => ({ section: x.id === "aa-role" ? "Experience" : "Profile", score: x.score, cited: cited.includes(x.id) })),
@@ -120,5 +120,66 @@ describe("POST /api/chat", () => {
     const text = await res.text();
     expect(text).not.toContain("08006");
     expect(JSON.parse(text)).toEqual({ error: "Something went wrong. Please try again later." });
+  });
+
+  describe("with Accept: text/event-stream", () => {
+    const sse = (body: string, headers: Record<string, string> = {}) => req(body, { accept: "text/event-stream", ...headers });
+    const events = async (res: Response) =>
+      (await res.text())
+        .split("\n\n")
+        .filter(Boolean)
+        .map((block) => {
+          const [e, d] = block.split("\n");
+          return { event: e.replace("event: ", ""), data: JSON.parse(d.replace("data: ", "")) };
+        });
+
+    it("streams versioned stage events then one final event equal to the JSON body", async () => {
+      handleChat.mockImplementation(async (_q: string, onStep?: (k: string, ms?: number) => void) => {
+        onStep?.("input");
+        onStep?.("retrieve", 80);
+        onStep?.("checks");
+        return { refused: false, answer: "I work at American Airlines.", citations: ["aa-role"], retrieved: ["aa-role"], stage: "answered", trace: { retrieved: [{ id: "aa-role", score: 0.6 }], retrieveMs: 80, modelMs: 900 } };
+      });
+      const res = await POST(sse(JSON.stringify({ question: "Where do you work?" })));
+      expect(res.status).toBe(200);
+      expect(res.headers.get("content-type")).toContain("text/event-stream");
+      expect(res.headers.get("cache-control")).toBe("no-store");
+      const list = await events(res);
+      expect(list.map((e) => e.event)).toEqual(["stage", "stage", "stage", "stage", "final"]);
+      expect(list.map((e) => e.data.key)).toEqual(["rate", "input", "retrieve", "checks", undefined]);
+      expect(list[2].data).toEqual({ v: 1, key: "retrieve", ms: 100 });
+      const { v, ...final } = list[4].data;
+      expect(v).toBe(1);
+      const json = await (await POST(req(JSON.stringify({ question: "Where do you work?" })))).json();
+      expect(final.refused).toBe(json.refused);
+      expect(final.answer).toBe(json.answer);
+      expect(final.citations).toEqual(json.citations);
+      expect(final.trace.steps).toEqual(json.trace.steps);
+    });
+
+    it("ends with one error event using a known message when the handler fails", async () => {
+      handleChat.mockRejectedValue(new Error("Database query failed (code 08006)."));
+      const res = await POST(sse(JSON.stringify({ question: "hi" })));
+      const text = await res.clone().text();
+      expect(text).not.toContain("08006");
+      const list = await events(res);
+      expect(list.at(-1)).toEqual({ event: "error", data: { v: 1, message: "Something went wrong. Please try again later." } });
+      expect(list.filter((e) => e.event === "error" || e.event === "final")).toHaveLength(1);
+    });
+
+    it("still returns the normal JSON errors before any stream starts", async () => {
+      check.mockResolvedValueOnce({ ok: false, reason: "minute" });
+      let res = await POST(sse(JSON.stringify({ question: "hi" })));
+      expect(res.status).toBe(429);
+      expect(res.headers.get("content-type")).toContain("application/json");
+      res = await POST(sse(JSON.stringify({ question: "hi" }), { "content-type": "text/plain" }));
+      expect(res.status).toBe(400);
+      res = await POST(sse("{}", { "content-length": "99999" }));
+      expect(res.status).toBe(413);
+      res = await POST(sse(JSON.stringify({ question: "" })));
+      expect(res.status).toBe(400);
+      expect(await res.json()).toEqual({ error: "Please send a question of up to 500 characters." });
+      expect(handleChat).not.toHaveBeenCalled();
+    });
   });
 });

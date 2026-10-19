@@ -505,3 +505,22 @@ h1 {
   h1 { background: none; color: CanvasText; }
   .chat::before { display: none; }
 }
+
+/* ---------------- Live request steps while an answer streams (ADR 012) ---------------- */
+.trace-live-steps { margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; }
+.trace-live .trace-dot { background: var(--accent-2); }
+.trace-live .trace-name { color: var(--text); }
+@media (prefers-reduced-motion: no-preference) {
+  .trace-live .trace-dot { animation: trace-pulse 1s ease-in-out infinite; }
+  @keyframes trace-pulse { 50% { box-shadow: 0 0 0 4px var(--glow); } }
+}
+
+/* Header and trace summary fit (round 2) */
+.nav-list { gap: 0.25rem 0.8rem; font-size: 0.9rem; }
+.trace-summary > span:first-of-type { margin-right: auto; }
+.trace-summary::before { flex: none; }
+@media (min-width: 64rem) { .header-row { flex-wrap: nowrap; } }
+
+/* Mobile: let grid children shrink so nothing forces sideways scroll */
+.hero > * { min-width: 0; }
+.fact-tile, .link-row li { min-width: 0; }

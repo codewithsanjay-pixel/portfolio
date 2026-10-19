@@ -1,0 +1,10 @@
+/* /mcp page. Uses the site's colour variables only; no inline styles (CSP, ADR 009). */
+.mcp h3 { font-size: 1.05rem; margin: 0 0 0.4rem; }
+.mcp-tool { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); padding: 1rem 1.1rem; margin-top: 1.1rem; }
+.mcp-tool code { font-family: var(--font-mono); }
+.mcp-tool .table-wrap { margin-top: 0.6rem; }
+.mcp-none { color: var(--muted); margin: 0.6rem 0 0; }
+.mcp-opt { color: var(--muted); font-size: 0.85rem; }
+.mcp-url { font-family: var(--font-mono); overflow-wrap: anywhere; }
+.mcp-code { margin: 0.4rem 0 1rem; padding: 0.8rem 1rem; overflow-x: auto; background: var(--band); border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.85rem; }
+.mcp-code code { font-family: var(--font-mono); white-space: pre; }

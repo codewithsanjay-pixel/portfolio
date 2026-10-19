@@ -46,9 +46,15 @@ function buildDeps(env: Env = process.env): ChatDeps {
   };
 }
 
-export const handleChat: ChatHandler = async (question) => {
+// Shared by the chat route and the read-only MCP server (lib/mcp), so both use the same
+// retriever, corpus allow-list, link allow-list and private-word list.
+export function getChatDeps(): ChatDeps {
   deps ??= buildDeps();
-  return answerQuestion(question, deps);
+  return deps;
+}
+
+export const handleChat: ChatHandler = async (question, onStep) => {
+  return answerQuestion(question, getChatDeps(), onStep);
 };
 
 let labels: Map<string, string> | null = null;

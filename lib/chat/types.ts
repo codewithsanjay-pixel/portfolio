@@ -1,3 +1,4 @@
+import type { StepCallback } from "./trace";
 // The interface between the chat route (step 7) and the evals (step 5).
 
 export type ChatResult = {
@@ -24,7 +25,7 @@ export type ChatTrace = {
 
 export type ChatStage = "input" | "scope" | "model" | "citations" | "guard" | "private" | "grounding" | "answered";
 
-export type ChatHandler = (question: string) => Promise<ChatResult>;
+export type ChatHandler = (question: string, onStep?: StepCallback) => Promise<ChatResult>;
 
 // The only text a refusal may contain (docs/CONTENT.md, "Chat assistant:
 // refusal message"). One fixed message for every refusal, so the wording of a

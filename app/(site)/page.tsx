@@ -4,9 +4,24 @@ import { ProjectCard } from "@/components/project-card";
 import { Section } from "@/components/section";
 import { SkillsExplorer } from "@/components/skills-explorer";
 import { Timeline } from "@/components/timeline";
-import { about, chat, eka, focus, links, person, roleProjects, skillGroups, timeline } from "@/content/site";
+import pkg from "@/package.json";
+import { about, chat, eka, focus, howItsBuilt, links, person, proofStrip, repoBranch, repoUrl, roleProjects, skillGroups, timeline } from "@/content/site";
+
+// Hero tile values are computed here, not typed: eval counts from the table on
+// /how-its-built, and the runtime dependency count from package.json.
+function proofTiles() {
+  const rows = howItsBuilt.sections.find((s) => s.table)?.table?.rows ?? [];
+  const total = rows.reduce((n, r) => n + r.cases, 0);
+  const passed = rows.reduce((n, r) => n + r.passed, 0);
+  return [
+    { value: String(total), label: proofStrip.evals.replace("{passed}", String(passed)), href: "/how-its-built" },
+    { value: String(Object.keys(pkg.dependencies).length), label: proofStrip.deps, href: `${repoUrl}/blob/${repoBranch}/package.json` },
+    { text: proofStrip.csp, label: proofStrip.cspLabel, href: "/trust" },
+  ];
+}
 
 export default function Home() {
+  const tiles = proofTiles();
   return (
     <>
       <section className="hero wrap" aria-labelledby="hero-title">
@@ -25,6 +40,16 @@ export default function Home() {
                 LinkedIn
               </a>
             </li>
+          </ul>
+          <ul className="facts-strip" aria-label={proofStrip.label}>
+            {tiles.map((t) => (
+              <li key={t.label}>
+                <a className="fact-tile" href={t.href}>
+                  {"value" in t ? <span className="fact-value">{t.value}</span> : <span className="fact-text">{t.text}</span>}
+                  <span className="fact-label">{t.label}</span>
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
         <ChatPanel text={chat} />

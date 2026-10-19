@@ -56,9 +56,20 @@
   color: var(--muted);
 }
 
+.pl-foot {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+}
+
+.pl-src {
+  font-size: 0.8rem;
+}
+
 .pl-tag {
   align-self: flex-start;
-  margin-top: auto;
   padding: 0.15rem 0.5rem;
   border: 1px solid var(--border);
   border-radius: 999px;
