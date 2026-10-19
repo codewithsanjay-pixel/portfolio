@@ -158,8 +158,6 @@ I am a backend engineer with 4+ years of experience, working mostly in Python, a
 
 I care most about problems where getting it wrong has a real cost. Access control that is enforced at the data layer, not only in a prompt. Retrieval that holds up as the document index grows. Evaluation that tells you something is broken before users do.
 
-I have also had a technical conversation with a professional at AWS about MCP security patterns and sub-agent identity.
-
 This site is a small example of the same habits. The chat answers only from my resume and project text. It reads the database through a read-only role, and the server checks that every source it cites is real. I wrote the evals before the chat.
 
 ## Footer

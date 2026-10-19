@@ -80,9 +80,6 @@ An item that also carries [CONFIRM] is not published until I confirm it, whateve
 ### Retrieval (American Airlines)
 - [PUBLIC-GENERAL] Retrieval used a bi-encoder step to find candidates, then an off-the-shelf cross-encoder to re-rank them. I did not build the re-ranker.
 
-### Conversations with other engineers
-- [PUBLIC-GENERAL] I have had a technical conversation with a professional at AWS about MCP security patterns and sub-agent identity. (Confirmed by me 2026-10-09. No name.)
-
 ### Ownership (American Airlines)
 - [PUBLIC-GENERAL] I own the architecture and delivery of the internal AI tooling I work on at American Airlines. (Confirmed by me 2026-10-09.)
 

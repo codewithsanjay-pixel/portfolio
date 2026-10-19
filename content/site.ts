@@ -20,7 +20,6 @@ export const person = {
 export const about = [
   "I am a backend engineer with 4+ years of experience, working mostly in Python, and most of my recent work is AI engineering. At American Airlines I own the architecture and delivery of internal AI tooling: RAG pipelines, AI agents and MCP integrations. Before that I worked at American Express on fraud detection and risk scoring services, where I learned what production means with high transaction volumes and real-time scoring.",
   "I care most about problems where getting it wrong has a real cost. Access control that is enforced at the data layer, not only in a prompt. Retrieval that holds up as the document index grows. Evaluation that tells you something is broken before users do.",
-  "I have also had a technical conversation with a professional at AWS about MCP security patterns and sub-agent identity.",
   "This site is a small example of the same habits. The chat answers only from my resume and project text. It reads the database through a read-only role, and the server checks that every source it cites is real. I wrote the evals before the chat.",
 ];
 
