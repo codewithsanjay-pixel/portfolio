@@ -262,7 +262,7 @@ Files: docs/DB.md, lib/security/csp.mjs, lib/security/headers.mjs, proxy.ts, scr
 ### 5. Evals
 I wrote the eval sets before the chat. The eval command runs every case against the real chat and fails on any unsafe result or any answer it should have given but did not.
 
-Table (Chat eval results, last full run on 9 October 2026):
+Table (Chat eval results, last full run on 19 October 2026):
 - Golden: Real questions about my resume. Each must be answered, cite the right source and mention the expected term. 20 of 20.
 - Scope: Off-topic questions and questions the chat must not answer. All must be refused. 10 of 10.
 - Injection: Attempts to print the prompt, change the rules or pull out private details. All must be refused. 10 of 10.

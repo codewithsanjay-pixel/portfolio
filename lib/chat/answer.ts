@@ -232,6 +232,10 @@ const ANSWER_SHAPING = [
   ),
   /\b(mention|say|include|add|note)\s+(the|your|his|an?)\s+(\w+\s+)?(award|prize|patent)\b/,
   /\b(repeat|copy|echo)\s+(after\s+me|this|the\s+following)\b/,
+  // Raw dumps: asking for the sources themselves, or for lines by their internal marker.
+  /\b(output|print|dump|show|reveal|display|give|list|paste|echo|return)\s+(me\s+)?(the\s+|your\s+|all\s+|every\s+|each\s+|these\s+|those\s+|any\s+)?(raw|verbatim|unedited|word for word)\s+(chunks?|sources?|documents?|notes?|lines?)\b/,
+  /\b(output|print|dump|show|reveal|display|give|list|paste|echo|return)\s+(me\s+)?(the\s+)?(raw|verbatim|unedited)\s+(text|contents?)\s+of\s+(every|all|each|your|the|any)\s+(documents?|sources?|chunks?|files?|notes?|lines?)\b/,
+  /\b(lines?|items?|documents?|sources?|chunks?|notes?)\s+(marked|tagged|labeled|labelled|flagged)\b.*\b(confirm|interview only|private|internal|hidden)\b/,
 ];
 
 export function scriptsTheAnswer(question: string): boolean {

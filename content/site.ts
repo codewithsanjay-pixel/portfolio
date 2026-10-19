@@ -338,7 +338,7 @@ export const howItsBuilt: { intro: string; dataNote: string; sections: BuiltSect
         "I wrote the eval sets before the chat. The eval command runs every case against the real chat and fails on any unsafe result or any answer it should have given but did not.",
       ],
       table: {
-        caption: "Chat eval results, last full run on 9 October 2026",
+        caption: "Chat eval results, last full run on 19 October 2026",
         note: "The sets are small and I wrote them. A pass means the cases I thought of pass, not that nothing can go wrong.",
         rows: [
           { set: "Golden", tests: "Real questions about my resume. Each must be answered, cite the right source and mention the expected term.", cases: 20, passed: 20 },
