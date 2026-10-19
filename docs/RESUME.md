@@ -7,7 +7,7 @@ Contact: san.jay.kan.dim.lla@gmail.com | https://www.linkedin.com/in/sanjay-kand
 NOTE FOR CLAUDE CODE: This file is the only source of facts about me. Do not add anything that is not here. Items marked [CONFIRM] need my confirmation before use.
 
 ## Summary
-- Backend Python developer with 4+ years of experience delivering AI-driven solutions for enterprise environments, combining full stack development with hands-on AI engineering.
+- Backend engineer working mostly in Python, with 4+ years of experience delivering AI-driven solutions for enterprise environments, combining full stack development with hands-on AI engineering.
 - Engineered production AI/LLM applications, including RAG pipelines, AI agents, and Model Context Protocol (MCP) integrations.
 - Developed REST APIs connecting AI services to core enterprise systems, using Python (FastAPI, Flask) on the backend and React on the frontend.
 - Applied prompt engineering to improve LLM output accuracy and reliability in production use cases.

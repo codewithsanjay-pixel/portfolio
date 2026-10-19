@@ -154,7 +154,7 @@ An endpoint that calls a language model is still an endpoint. It needs authentic
 ## About
 Approved by me 2026-10-09. Live on the site.
 
-I am a backend Python developer with 4+ years of experience, and most of my recent work is AI engineering. At American Airlines I own the architecture and delivery of internal AI tooling: RAG pipelines, AI agents and MCP integrations. Before that I worked at American Express on fraud detection and risk scoring services, where I learned what production means with high transaction volumes and real-time scoring.
+I am a backend engineer with 4+ years of experience, working mostly in Python, and most of my recent work is AI engineering. At American Airlines I own the architecture and delivery of internal AI tooling: RAG pipelines, AI agents and MCP integrations. Before that I worked at American Express on fraud detection and risk scoring services, where I learned what production means with high transaction volumes and real-time scoring.
 
 I care most about problems where getting it wrong has a real cost. Access control that is enforced at the data layer, not only in a prompt. Retrieval that holds up as the document index grows. Evaluation that tells you something is broken before users do.
 
