@@ -12,11 +12,10 @@ import { about, chat, eka, focus, howItsBuilt, links, person, proofStrip, repoBr
 function proofTiles() {
   const rows = howItsBuilt.sections.find((s) => s.table)?.table?.rows ?? [];
   const total = rows.reduce((n, r) => n + r.cases, 0);
-  const passed = rows.reduce((n, r) => n + r.passed, 0);
   return [
-    { value: String(total), label: proofStrip.evals.replace("{passed}", String(passed)), href: "/how-its-built" },
+    { value: String(total), label: proofStrip.evals, href: "/how-its-built" },
     { value: String(Object.keys(pkg.dependencies).length), label: proofStrip.deps, href: `${repoUrl}/blob/${repoBranch}/package.json` },
-    { text: proofStrip.csp, label: proofStrip.cspLabel, href: "/trust" },
+    { text: proofStrip.secrets, label: proofStrip.secretsLabel, href: `${repoUrl}/blob/${repoBranch}/scripts/check-built-output.mjs` },
   ];
 }
 

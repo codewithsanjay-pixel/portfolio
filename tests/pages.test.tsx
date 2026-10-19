@@ -53,12 +53,11 @@ describe("home page", () => {
   it("shows three derived fact tiles under the link buttons, each linking to where it can be checked", () => {
     const rows = howItsBuilt.sections.find((x) => x.table)!.table!.rows;
     const total = rows.reduce((n, r) => n + r.cases, 0);
-    const passed = rows.reduce((n, r) => n + r.passed, 0);
     const tiles = [...pages.home.matchAll(/<a class="fact-tile" href="([^"]+)">(.*?)<\/a>/g)].map((m) => ({ href: m[1], text: text(m[2]).trim() }));
     expect(tiles).toEqual([
-      { href: "/how-its-built", text: `${total} ${proofStrip.evals.replace("{passed}", String(passed))}` },
+      { href: "/how-its-built", text: `${total} ${proofStrip.evals}` },
       { href: expect.stringMatching(/\/blob\/main\/package\.json$/), text: `${Object.keys(pkg.dependencies).length} ${proofStrip.deps}` },
-      { href: "/trust", text: `${proofStrip.csp} ${proofStrip.cspLabel}` },
+      { href: expect.stringMatching(/\/blob\/main\/scripts\/check-built-output\.mjs$/), text: `${proofStrip.secrets} ${proofStrip.secretsLabel}` },
     ]);
     expect(pages.home.indexOf("facts-strip")).toBeGreaterThan(pages.home.indexOf("LinkedIn"));
   });

@@ -307,9 +307,9 @@ Header links, in order: Focus, Experience, Skills, Projects, About, Contact, How
 ## Hero facts strip (ADR 014)
 Three small tiles under the GitHub and LinkedIn buttons. The numbers are computed when the page renders: the eval case total from the table on the How it's built page, and the runtime dependency count from package.json. Nothing is typed in.
 Group label (for screen readers): Checkable facts about this site
-- Tile 1, links to /how-its-built: "{total}", then: eval cases ({passed} passed in the last full run)
-- Tile 2, links to package.json on GitHub: "{count}", then: runtime dependencies
-- Tile 3, links to /trust: Strict CSP, nonce per request, then: Content-Security-Policy
+- Tile 1, links to /how-its-built: "{total}", then: eval cases across four public sets
+- Tile 2, links to package.json on GitHub: "{count}", then: runtime dependencies, kept small so there is less to audit
+- Tile 3, links to scripts/check-built-output.mjs on GitHub: Build fails if a secret reaches the browser, then: Checked on every build
 
 ## Trust and limits (own page, /trust, ADR 014)
 Every statement is backed by a file in the repository. Numbers in {braces} are computed when the page renders: from the eval table above, and from the public injection eval file. File lists in the controls table are checked by a test (each file exists and is tracked by git).

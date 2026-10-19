@@ -504,8 +504,8 @@ export const trustPage = {
 // The hero strip. Values are computed when the page renders (app/(site)/page.tsx).
 export const proofStrip = {
   label: "Checkable facts about this site",
-  evals: "eval cases ({passed} passed in the last full run)",
-  deps: "runtime dependencies",
-  csp: "Strict CSP, nonce per request",
-  cspLabel: "Content-Security-Policy",
+  evals: "eval cases across four public sets",
+  deps: "runtime dependencies, kept small so there is less to audit",
+  secrets: "Build fails if a secret reaches the browser",
+  secretsLabel: "Checked on every build",
 };
