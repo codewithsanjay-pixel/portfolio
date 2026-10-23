@@ -114,6 +114,18 @@ An item that also carries [CONFIRM] is not published until I confirm it, whateve
 - [PUBLIC-GENERAL] The AI integrations at American Airlines, including the Enterprise Knowledge Assistant, ran on AWS. I used Lambda for serverless functions and S3 for the documents that fed the retrieval pipeline, and the deployment ran on EC2. I also used Azure OpenAI Service for language model integration. (Confirmed by me 2026-10-19.)
 - [PUBLIC-GENERAL] Platform engineering owned the AWS environment. My work used these services at the application layer: I configured how the AI services connected to and used them. I did not provision or manage the underlying infrastructure. (Confirmed by me 2026-10-19.)
 
+### Current role (American Airlines)
+- [PUBLIC-GENERAL] My current role is Software Development Engineer at American Airlines, Dallas, TX (Remote), since February 2025. I am a backend-focused full stack developer working on internal AI tooling.
+
+### Experience length
+- [PUBLIC-GENERAL] I have 4+ years of professional experience as a backend engineer, since 2021, working mostly in Python.
+
+### Retrieval quality (American Airlines)
+- [PUBLIC-GENERAL] I improved retrieval quality in three ways: splitting documents on headings and paragraph breaks instead of fixed sizes, keeping fewer passages after re-ranking, and expanding each query before embedding it to close the gap between informal questions and formal documents. I checked each change against my test set.
+
+### Degree (University of Texas at Arlington)
+- [PUBLIC-GENERAL] I have a master's degree in Applied Statistics and Data Science from the University of Texas at Arlington, so my graduate degree is in statistics and data science. I graduated in December 2025.
+
 ### Enterprise Knowledge Assistant rollout
 - [PUBLIC-GENERAL] The assistant grew from one document set to several over the following months after the initial rollout, as the business team's trust grew. (Wording chosen by me 2026-10-09.)
 

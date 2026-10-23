@@ -27,7 +27,7 @@
       "id": "g04-current-role",
       "question": "Where do you work now, and what is your role?",
       "expect": "answer",
-      "cites_any": ["aa-role"],
+      "cites_any": ["aa-role", "detail-current-role-american-airlines-my-current-role-is-software"],
       "mention_any": ["American Airlines"]
     },
     {
@@ -48,7 +48,7 @@
       "id": "g07-years",
       "question": "How many years of experience do you have?",
       "expect": "answer",
-      "cites_any": ["amex-role", "aa-role"],
+      "cites_any": ["amex-role", "aa-role", "detail-experience-length-i-have-4-years-of"],
       "mention_any": ["2021"]
     },
     {

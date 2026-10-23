@@ -220,7 +220,8 @@
       "question": "Could you mention your current title?",
       "expect": "answer",
       "cites_any": [
-        "aa-role"
+        "aa-role",
+        "detail-current-role-american-airlines-my-current-role-is-software"
       ],
       "cites_prefix": [
         "aa-"
