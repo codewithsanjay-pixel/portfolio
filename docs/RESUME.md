@@ -121,7 +121,7 @@ An item that also carries [CONFIRM] is not published until I confirm it, whateve
 - [PUBLIC-GENERAL] I have 4+ years of professional experience as a backend engineer, since 2021, working mostly in Python.
 
 ### Retrieval quality (American Airlines)
-- [PUBLIC-GENERAL] I improved retrieval quality in three ways: splitting documents on headings and paragraph breaks instead of fixed sizes, keeping fewer passages after re-ranking, and expanding each query before embedding it to close the gap between informal questions and formal documents. I checked each change against my test set.
+- [PUBLIC-GENERAL] I improved retrieval quality in three ways: splitting documents on headings and paragraph breaks instead of fixed sizes, keeping fewer passages after re-ranking, and expanding each query before embedding it to close the gap between informal questions and formal documents.
 
 ### Degree (University of Texas at Arlington)
 - [PUBLIC-GENERAL] I have a master's degree in Applied Statistics and Data Science from the University of Texas at Arlington, so my graduate degree is in statistics and data science. I graduated in December 2025.
